@@ -1,0 +1,41 @@
+% LaTeX manuscript skeleton — Gibbs-VLA-Overshoot
+\documentclass[11pt]{article}
+\usepackage{amsmath,amssymb}
+\usepackage{graphicx}
+\usepackage{hyperref}
+
+\title{Gibbs Phenomena in Vision-Language-Action Policies:\\
+Semantic-to-Physical Impedance and Spectral Signatures}
+\author{}
+\date{\today}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+We hypothesize that ``jitter'' in Vision-Language-Action (VLA) models is not unstructured noise but a signal-theoretic artifact related to the Gibbs phenomenon: approximating semantic discontinuities with smooth, finite-dimensional controllers yields predictable overshoot and ringing. We outline empirical tests on Language-Table and CALVIN trajectories and relate overshoot ratios to the classical Gibbs constant ($\approx 8.9\%$).
+\end{abstract}
+
+\section{Introduction}
+% Blind philosopher: high-level logic vs.\ low-level grounding.
+
+\section{Discontinuity in the $L \to A$ map}
+% Step-like targets; Dirichlet / partial-sum viewpoint.
+
+\section{Theory}
+% sign(x), partial sums S_n, limit ~1.08949 at pi/n.
+
+\section{Methods}
+% Trajectories as multivariate time series; FFT / wavelet metrics from repository.
+
+\section{Experiments}
+% CALVIN, Language-Table; optional cross-domain weather agent.
+
+\section{Discussion}
+% JEPA / manifold flow; discrete-conditioning limitations.
+
+\nocite{*}
+\bibliographystyle{plain}
+\bibliography{references}
+
+\end{document}
