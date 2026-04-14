@@ -34,3 +34,12 @@ paper/*.pdf
 # Data (large / local paths)
 data/*.hdf5
 data/*.npz
+data/language_table_blocktoblock_sim/
+data/bridge/
+data/bridge_orig/
+
+# Experiment outputs (generated figures, JSON reports)
+experiments/outputs/
+
+# Temporary files
+tmp/
