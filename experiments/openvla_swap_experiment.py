@@ -56,7 +56,7 @@ def build_parser() -> argparse.ArgumentParser:
                     help="Post-switch instruction. If None, uses a default contrasting task.")
     p.add_argument("--episode-index", type=int, default=0, help="Bridge V2 episode to sample from.")
     p.add_argument("--step-index", type=int, default=None, help="Step within the episode for observation.")
-    p.add_argument("--device", default="cuda:0")
+    p.add_argument("--device", default="auto", help="auto | cuda:0 | mps | cpu")
     p.add_argument("--unnorm-key", default="bridge_orig",
                     help="OpenVLA de-normalization key. Use 'none' for raw [-1,1].")
     p.add_argument("--data-dir", default=None, help="TFDS data directory for Bridge V2.")

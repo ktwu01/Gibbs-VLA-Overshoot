@@ -57,11 +57,26 @@ class OpenVLAPolicy:
         self,
         model_id: str = "openvla/openvla-7b",
         unnorm_key: str | None = "bridge_orig",
-        device: str = "cuda:0",
+        device: str = "auto",
         use_flash_attn: bool = False,
     ):
         import torch
         from transformers import AutoModelForVision2Seq, AutoProcessor
+
+        # Auto-detect device: CUDA > MPS > CPU
+        if device == "auto":
+            if torch.cuda.is_available():
+                device = "cuda:0"
+            elif torch.backends.mps.is_available():
+                device = "mps"
+            else:
+                device = "cpu"
+
+        # MPS doesn't support bfloat16 well; use float32 on MPS/CPU
+        if device == "mps" or device == "cpu":
+            dtype = torch.float32
+        else:
+            dtype = torch.bfloat16
 
         attn_impl = "flash_attention_2" if use_flash_attn else "eager"
         self.processor = AutoProcessor.from_pretrained(
@@ -70,7 +85,7 @@ class OpenVLAPolicy:
         self.vla = AutoModelForVision2Seq.from_pretrained(
             model_id,
             attn_implementation=attn_impl,
-            torch_dtype=torch.bfloat16,
+            torch_dtype=dtype,
             low_cpu_mem_usage=True,
             trust_remote_code=True,
         ).to(device)
@@ -81,7 +96,7 @@ class OpenVLAPolicy:
 
         self.unnorm_key = unnorm_key
         self.device = device
-        self._torch_dtype = torch.bfloat16
+        self._torch_dtype = dtype
 
     @property
     def action_dim(self) -> int:
