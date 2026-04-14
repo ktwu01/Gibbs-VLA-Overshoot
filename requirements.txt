@@ -3,3 +3,11 @@ scipy>=1.11
 matplotlib>=3.7
 jupyter>=1.0
 PyWavelets>=1.5
+tfrecord>=1.14
+
+# OpenVLA + Bridge V2 (install with: pip install -e ".[openvla]")
+# torch>=2.1
+# transformers>=4.36
+# Pillow>=10.0
+# tensorflow>=2.15
+# tensorflow-datasets>=4.9

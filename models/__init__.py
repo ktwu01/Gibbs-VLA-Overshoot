@@ -3,6 +3,7 @@
 from .vla_wrapper import (
     InstructionSwapRunner,
     MockPolicy,
+    PolicyAdapter,
     SwapResult,
     TrajectoryBatch,
     VLATrajectoryExtractor,
@@ -11,7 +12,15 @@ from .vla_wrapper import (
 __all__ = [
     "InstructionSwapRunner",
     "MockPolicy",
+    "PolicyAdapter",
     "SwapResult",
     "TrajectoryBatch",
     "VLATrajectoryExtractor",
 ]
+
+# Lazy import: OpenVLAPolicy requires torch/transformers
+def __getattr__(name: str):
+    if name == "OpenVLAPolicy":
+        from .openvla_policy import OpenVLAPolicy
+        return OpenVLAPolicy
+    raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
