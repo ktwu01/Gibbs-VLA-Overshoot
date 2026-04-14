@@ -87,7 +87,7 @@ def band_energy_ratio(
     if f_high <= f_low:
         raise ValueError("f_high must exceed f_low.")
 
-    _trapz = getattr(np, "trapezoid", np.trapz)
+    _trapz = getattr(np, "trapezoid", getattr(np, "trapz", None))
     total = _trapz(psd, freqs)
     if total <= 0:
         return 0.0

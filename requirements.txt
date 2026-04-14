@@ -7,7 +7,8 @@ tfrecord>=1.14
 
 # OpenVLA + Bridge V2 (install with: pip install -e ".[openvla]")
 # torch>=2.1
-# transformers>=4.36
+# transformers>=4.40,<4.50
 # Pillow>=10.0
-# tensorflow>=2.15
-# tensorflow-datasets>=4.9
+# timm>=0.9.10,<1
+# accelerate>=0.26
+# torchvision
