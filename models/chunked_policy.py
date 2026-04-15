@@ -144,6 +144,9 @@ class ChunkedVLAPolicy:
 
         # Resize to expected resolution
         img_res = getattr(self.policy.config, 'image_resolution', 224)
+        if isinstance(img_res, (tuple, list)):
+            img_res = img_res[0]
+        img_res = int(img_res)
         if image_tensor.shape[-1] != img_res or image_tensor.shape[-2] != img_res:
             image_tensor = torch.nn.functional.interpolate(
                 image_tensor, size=(img_res, img_res), mode='bilinear', align_corners=False
