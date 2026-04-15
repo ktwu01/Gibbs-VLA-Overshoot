@@ -103,11 +103,14 @@ class ChunkedVLAPolicy:
         from transformers import AutoTokenizer
 
         if self._model_type == "pi0":
-            tokenizer_name = "google/paligemma-3b-pt-224"
+            # PaliGemma uses the Gemma tokenizer. The official repo
+            # (google/paligemma-3b-pt-224) is gated, so we use an
+            # ungated mirror with the same tokenizer vocabulary.
+            tokenizer_name = "unsloth/gemma-2b"
             self._max_length = getattr(self.policy.config, 'tokenizer_max_length', 48)
         else:
-            # SmolVLA uses the VLM's tokenizer
-            vlm_name = getattr(self.policy.config, 'vlm_model_name', 'HuggingFaceTB/SmolVLM2-256M-Video-Instruct')
+            vlm_name = getattr(self.policy.config, 'vlm_model_name',
+                               'HuggingFaceTB/SmolVLM2-256M-Video-Instruct')
             tokenizer_name = vlm_name
             self._max_length = getattr(self.policy.config, 'tokenizer_max_length', 77)
 
