@@ -169,15 +169,17 @@ class ChunkedVLAPolicy:
         # Build batch with the image feature keys the model expects
         batch = {}
 
-        # Image keys: try config.image_features first, fall back to common names
+        # Provide the same image for ALL expected camera keys
         img_keys = list(getattr(self.policy.config, 'image_features', {}).keys())
         if not img_keys:
-            img_keys = ["observation.images.top"]  # common LeRobot key
-        batch[img_keys[0]] = image_tensor
+            img_keys = ["observation.images.top"]
+        for key in img_keys:
+            batch[key] = image_tensor.clone()
 
         batch["observation.state"] = state
+        # Attention mask must be boolean for torch.where in attention computation
         batch[OBS_LANGUAGE_TOKENS] = encoded["input_ids"].to(self.device)
-        batch[OBS_LANGUAGE_ATTENTION_MASK] = encoded["attention_mask"].to(self.device)
+        batch[OBS_LANGUAGE_ATTENTION_MASK] = encoded["attention_mask"].bool().to(self.device)
 
         return batch
 
