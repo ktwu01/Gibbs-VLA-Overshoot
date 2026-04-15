@@ -287,7 +287,86 @@ Before running the autoresearch regression loop, we need to **determine which ex
 
 ---
 
-## 7. Files Changed
+## 7. ROUND 3 PLAN: Action-Chunking Models (Pivot)
+
+### 7.1 Key Insight from Literature
+
+Existing robotics papers confirm that **action-chunking models DO exhibit transient artifacts at chunk boundaries**:
+- **A2C2** (arXiv 2509.23224): identifies inconsistencies between successive action chunks
+- **LiPo**: explicitly addresses discontinuities at chunk boundaries degrading motion quality
+- **RTC (Real-Time Chunking)**: treats chunk switching as an inpainting problem with blending
+
+This is exactly the Gibbs analog we're looking for.
+
+### 7.2 Architecture Rankings (Post-Research)
+
+| Rank | Model | Params | Chunk Size | GPU Mem | Overshoot Likelihood | Availability |
+|------|-------|--------|-----------|---------|---------------------|-------------|
+| **1** | **pi0** (LeRobot) | 4B | 50 actions | ~12-16 GB | **HIGH** | `lerobot/pi0_base` |
+| **2** | **SmolVLA** (LeRobot) | 450M | 50 actions | ~2-3 GB | **MED-HIGH** | `lerobot/smolvla_base` |
+| **3** | **Octo** | 27-93M | 4 actions | <4 GB | **MEDIUM** | `rail-berkeley/octo-base` |
+| ctrl | OpenVLA | 7B | 1 (none) | ~16 GB | **ZERO** (confirmed) | `openvla/openvla-7b` |
+
+### 7.3 Why Chunking = Gibbs
+
+The critical variable is `n_action_steps` — how many actions from each chunk are executed before re-planning:
+
+```
+Chunk at t=45: model predicts actions[45:95] for instruction A ("pick up block")
+Instruction swap at t=50
+Actions[50:54] still execute OLD instruction A's planned trajectory
+Chunk at t=55: model predicts actions[55:105] for instruction B ("push block")
+→ Discontinuity at chunk boundary → overshoot/ringing in the blended trajectory
+```
+
+With `n_action_steps=50` (full open-loop): maximal overshoot (entire chunk committed)
+With `n_action_steps=1` (re-plan every step): minimal overshoot (approaches memoryless)
+
+This is the direct analog of truncation order in Fourier series!
+
+### 7.4 Experiment Matrix: Round 3
+
+**Strategy:** Start with SmolVLA (fast iteration, 450M), replicate with pi0 (main result).
+
+| ID | Model | n_action_steps | Chunk Size | Switch Step | Instructions | Rationale |
+|----|-------|---------------|-----------|-------------|-------------|-----------|
+| r3_exp01 | SmolVLA | 50 (full) | 50 | 50 | default | Maximum chunk inertia |
+| r3_exp02 | SmolVLA | 25 | 50 | 50 | default | Half-chunk execution |
+| r3_exp03 | SmolVLA | 10 | 50 | 50 | default | Short execution window |
+| r3_exp04 | SmolVLA | 5 | 50 | 50 | default | Near-memoryless |
+| r3_exp05 | SmolVLA | 1 | 50 | 50 | default | Control: re-plan every step |
+| r3_exp06 | pi0 | 50 (full) | 50 | 50 | default | Main result: large model |
+| r3_exp07 | pi0 | 25 | 50 | 50 | default | Half-chunk |
+| r3_exp08 | pi0 | 10 | 50 | 50 | default | Short execution |
+| r3_exp09 | pi0 | 1 | 50 | 50 | default | Control |
+| r3_exp10 | Octo | 4 (full) | 4 | 50 | default | Diffusion baseline |
+
+**Key prediction:** Overshoot should scale with `n_action_steps / chunk_size`. If it converges to ~8.95% at large chunk sizes, the Gibbs analogy holds.
+
+### 7.5 Installation Plan (NCAR)
+
+```bash
+# In the gibbs conda env:
+pip install "lerobot[pi]@git+https://github.com/huggingface/lerobot.git"
+# This installs: LeRobot + pi0/SmolVLA dependencies
+# Octo (PyTorch port):
+pip install octo-pytorch
+```
+
+### 7.6 Implementation Approach
+
+Need a new policy adapter (`models/chunked_policy.py`) that:
+1. Wraps LeRobot's pi0/SmolVLA policy
+2. Maintains an action buffer (the current chunk)
+3. Only re-queries the model every `n_action_steps` steps
+4. At re-query time, generates a new 50-action chunk conditioned on current (observation, instruction)
+5. Returns `action_buffer[local_step]` at each timestep
+
+The instruction-swap runner stays the same — it just calls `policy.predict(obs, instruction)` at each step. The chunked policy internally manages when to re-plan.
+
+---
+
+## 8. Files Changed
 
 | File | Change |
 |------|--------|
@@ -311,6 +390,8 @@ Before running the autoresearch regression loop, we need to **determine which ex
 | 2026-04-15 PM | Fixed unnorm bug, Round 2: 10 experiments |
 | 2026-04-15 PM | **Conclusion: OpenVLA is memoryless, 0% overshoot** |
 | 2026-04-15 PM | Cloned autoresearch, wrote PLAN_v2 |
-| **NEXT** | Codex review of plan → determine best architecture |
-| **NEXT** | Implement minimal experiment with chosen architecture |
-| **NEXT** | AutoResearch cron loop for parameter sweep |
+| 2026-04-15 PM | Codex review: pi0 + SmolVLA (action chunking) identified as best candidates |
+| **NEXT** | Install LeRobot + pi0/SmolVLA, implement chunked_policy adapter |
+| **NEXT** | Round 3: 10 experiments varying n_action_steps (chunk execution length) |
+| **NEXT** | If overshoot found: AutoResearch loop to characterize scaling law |
+| **NEXT** | If not: test closed-loop simulation (MuJoCo) for physical overshoot |
