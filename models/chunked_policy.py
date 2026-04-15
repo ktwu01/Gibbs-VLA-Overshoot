@@ -12,9 +12,24 @@ are executed before re-querying the model.  Larger = more "inertia".
 
 from __future__ import annotations
 
+import importlib
+import sys
+import types
+
 import numpy as np
 import torch
 from PIL import Image
+
+
+def _patch_lerobot_groot():
+    """Patch around LeRobot groot dataclass bug in Python 3.12."""
+    if 'lerobot.policies.groot' not in sys.modules:
+        mock = types.ModuleType('lerobot.policies.groot')
+        mock_cfg = types.ModuleType('lerobot.policies.groot.configuration_groot')
+        mock_cfg.GrootConfig = type('GrootConfig', (), {})
+        sys.modules['lerobot.policies.groot'] = mock
+        sys.modules['lerobot.policies.groot.configuration_groot'] = mock_cfg
+        sys.modules['lerobot.policies.groot.__init__'] = mock
 
 
 class ChunkedVLAPolicy:
@@ -57,12 +72,15 @@ class ChunkedVLAPolicy:
         self.device = device
         self.n_action_steps = n_action_steps
 
+        # Patch groot import bug before loading LeRobot policies
+        _patch_lerobot_groot()
+
         # Detect model type and load
         if "smolvla" in model_id.lower():
-            from lerobot.policies.smolvla import SmolVLAPolicy
+            from lerobot.policies.smolvla.modeling_smolvla import SmolVLAPolicy
             self.policy = SmolVLAPolicy.from_pretrained(model_id)
         elif "pi0" in model_id.lower():
-            from lerobot.policies.pi0 import PI0Policy
+            from lerobot.policies.pi0.modeling_pi0 import PI0Policy
             self.policy = PI0Policy.from_pretrained(model_id)
         else:
             raise ValueError(f"Unknown model type in '{model_id}'. Expected 'pi0' or 'smolvla'.")
