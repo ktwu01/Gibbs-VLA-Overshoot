@@ -1,0 +1,33 @@
+#!/bin/bash
+#PBS -N gibbs-openvla
+#PBS -q casper
+#PBS -l select=1:ncpus=4:mem=64GB:ngpus=1:gpu_type=a100
+#PBS -l walltime=01:00:00
+#PBS -A UTAA0012
+#PBS -o gibbs-openvla.out
+#PBS -e gibbs-openvla.err
+#PBS -j oe
+
+module load conda
+conda activate gibbs
+
+export HF_HOME=/glade/work/$USER/.cache/huggingface
+
+cd $HOME/Gibbs-VLA-Overshoot
+
+echo "=== GPU Info ==="
+nvidia-smi
+
+echo "=== PyTorch GPU Check ==="
+python -c "import torch; print('CUDA:', torch.cuda.is_available(), torch.cuda.get_device_name(0) if torch.cuda.is_available() else 'N/A')"
+
+echo "=== Running OpenVLA Swap Experiment ==="
+python -m experiments.openvla_swap_experiment \
+    --output experiments/outputs/openvla_swap.png \
+    --total-steps 100 \
+    --switch-step 50
+
+echo "=== Results ==="
+cat experiments/outputs/openvla_swap.json | python -m json.tool
+
+echo "Done."

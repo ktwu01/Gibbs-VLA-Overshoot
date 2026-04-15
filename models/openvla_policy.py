@@ -124,11 +124,29 @@ class OpenVLAPolicy:
 
         inputs = self.processor(prompt, image).to(self.device, dtype=self._torch_dtype)
 
-        with torch.no_grad():
-            action = self.vla.predict_action(
-                **inputs,
-                unnorm_key=self.unnorm_key,
-                do_sample=False,
-            )
+        if self.unnorm_key is not None:
+            # Standard path: model handles de-normalization
+            with torch.no_grad():
+                action = self.vla.predict_action(
+                    **inputs,
+                    unnorm_key=self.unnorm_key,
+                    do_sample=False,
+                )
+            return np.asarray(action, dtype=np.float64)
 
-        return np.asarray(action, dtype=np.float64)
+        # Raw action path: manually generate tokens and decode to [-1, 1]
+        input_ids = inputs["input_ids"]
+        if not torch.all(input_ids[:, -1] == 29871):
+            input_ids = torch.cat(
+                (input_ids, torch.tensor([[29871]], device=input_ids.device)), dim=1
+            )
+        with torch.no_grad():
+            generated_ids = self.vla.generate(
+                input_ids, max_new_tokens=self.action_dim, do_sample=False,
+            )
+        predicted_token_ids = generated_ids[0, -self.action_dim:].cpu().numpy()
+        discretized = self.vla.vocab_size - predicted_token_ids
+        discretized = np.clip(discretized - 1, a_min=0,
+                              a_max=self.vla.bin_centers.shape[0] - 1)
+        normalized_actions = self.vla.bin_centers[discretized]
+        return np.asarray(normalized_actions, dtype=np.float64)

@@ -1,0 +1,142 @@
+#!/bin/bash
+#PBS -N gibbs-round2
+#PBS -q casper
+#PBS -l select=1:ncpus=4:mem=64GB:ngpus=1:gpu_type=a100
+#PBS -l walltime=02:00:00
+#PBS -A UTAA0012
+#PBS -o gibbs-round2.out
+#PBS -e gibbs-round2.err
+#PBS -j oe
+
+module load conda
+conda activate gibbs
+
+export HF_HOME=/glade/work/$USER/.cache/huggingface
+cd $HOME/Gibbs-VLA-Overshoot
+mkdir -p experiments/outputs
+
+echo "=== GPU Info ==="
+nvidia-smi
+echo ""
+
+# ============================================================
+# ROUND 2: Fix unnorm-key none + more diverse experiments
+# Hypothesis: Gibbs ringing is in the normalized token space,
+# not in the de-normalized physical action space.
+# ============================================================
+
+# ---------- r2_exp01: Raw actions, X-axis, default instructions ----------
+echo "========== r2_exp01: raw dx, default instrs =========="
+python -m experiments.openvla_swap_experiment \
+    --output experiments/outputs/r2_exp01_dx_raw.png \
+    --total-steps 100 --switch-step 50 --axis 0 \
+    --unnorm-key none
+echo ""
+
+# ---------- r2_exp02: Raw actions, Y-axis ----------
+echo "========== r2_exp02: raw dy =========="
+python -m experiments.openvla_swap_experiment \
+    --output experiments/outputs/r2_exp02_dy_raw.png \
+    --total-steps 100 --switch-step 50 --axis 1 \
+    --unnorm-key none
+echo ""
+
+# ---------- r2_exp03: Raw actions, Z-axis ----------
+echo "========== r2_exp03: raw dz =========="
+python -m experiments.openvla_swap_experiment \
+    --output experiments/outputs/r2_exp03_dz_raw.png \
+    --total-steps 100 --switch-step 50 --axis 2 \
+    --unnorm-key none
+echo ""
+
+# ---------- r2_exp04: Raw, high-contrast instrs, all axes logged ----------
+echo "========== r2_exp04: raw, sushi vs drawer =========="
+python -m experiments.openvla_swap_experiment \
+    --output experiments/outputs/r2_exp04_raw_sushi_drawer.png \
+    --total-steps 100 --switch-step 50 --axis 0 \
+    --unnorm-key none \
+    --instruction-a "pick up the sushi" \
+    --instruction-b "close the drawer"
+echo ""
+
+# ---------- r2_exp05: Raw, long rollout, early switch ----------
+echo "========== r2_exp05: raw, long, early switch =========="
+python -m experiments.openvla_swap_experiment \
+    --output experiments/outputs/r2_exp05_raw_long_early.png \
+    --total-steps 200 --switch-step 50 --axis 0 \
+    --unnorm-key none
+echo ""
+
+# ---------- r2_exp06: Raw, corn vs cloth ----------
+echo "========== r2_exp06: raw, corn vs cloth =========="
+python -m experiments.openvla_swap_experiment \
+    --output experiments/outputs/r2_exp06_raw_corn_cloth.png \
+    --total-steps 100 --switch-step 50 --axis 0 \
+    --unnorm-key none \
+    --instruction-a "put the corn in the pot" \
+    --instruction-b "move the cloth to the right"
+echo ""
+
+# ---------- r2_exp07: Raw, different episode (different synthetic obs) ----------
+echo "========== r2_exp07: raw, episode 1 =========="
+python -m experiments.openvla_swap_experiment \
+    --output experiments/outputs/r2_exp07_raw_ep1.png \
+    --total-steps 100 --switch-step 50 --axis 0 \
+    --unnorm-key none \
+    --episode-index 1
+echo ""
+
+# ---------- r2_exp08: Raw, episode 2 ----------
+echo "========== r2_exp08: raw, episode 2 =========="
+python -m experiments.openvla_swap_experiment \
+    --output experiments/outputs/r2_exp08_raw_ep2.png \
+    --total-steps 100 --switch-step 50 --axis 0 \
+    --unnorm-key none \
+    --episode-index 2
+echo ""
+
+# ---------- r2_exp09: Bridge_orig with different unnorm keys ----------
+echo "========== r2_exp09: fractal dataset unnorm =========="
+python -m experiments.openvla_swap_experiment \
+    --output experiments/outputs/r2_exp09_fractal.png \
+    --total-steps 100 --switch-step 50 --axis 0 \
+    --unnorm-key fractal20220817_data \
+    --instruction-a "pick up the sushi" \
+    --instruction-b "close the drawer"
+echo ""
+
+# ---------- r2_exp10: Raw, gripper axis, pick vs push ----------
+echo "========== r2_exp10: raw, gripper =========="
+python -m experiments.openvla_swap_experiment \
+    --output experiments/outputs/r2_exp10_raw_grip.png \
+    --total-steps 100 --switch-step 50 --axis 6 \
+    --unnorm-key none \
+    --instruction-a "pick up the red block" \
+    --instruction-b "push the blue block to the left"
+echo ""
+
+echo "========== ALL ROUND 2 EXPERIMENTS DONE =========="
+echo ""
+
+# Summarize all results (both rounds)
+echo "========== FULL SUMMARY =========="
+for f in experiments/outputs/*.json; do
+    name=$(basename "$f" .json)
+    overshoot=$(python -c "import json; d=json.load(open('$f')); print(f'{d[\"overshoot_percent\"]:.4f}%')" 2>/dev/null || echo "ERROR")
+    plaw=$(python -c "import json; d=json.load(open('$f')); print(f'{d[\"power_law_exponent\"]:.4f}')" 2>/dev/null || echo "ERROR")
+    max_axis=$(python -c "
+import json
+d=json.load(open('$f'))
+pa = d.get('per_axis_overshoot_percent', {})
+if pa:
+    valid = {k:v for k,v in pa.items() if v==v}  # filter NaN
+    if valid:
+        best_k = max(valid, key=valid.get)
+        print(f'{valid[best_k]:.4f}% ({best_k})')
+    else:
+        print('N/A')
+else:
+    print('N/A')
+" 2>/dev/null || echo "ERROR")
+    echo "$name: overshoot=$overshoot, max_axis=$max_axis, plaw=$plaw"
+done

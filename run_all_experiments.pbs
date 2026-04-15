@@ -1,0 +1,122 @@
+#!/bin/bash
+#PBS -N gibbs-exp-all
+#PBS -q casper
+#PBS -l select=1:ncpus=4:mem=64GB:ngpus=1:gpu_type=a100
+#PBS -l walltime=02:00:00
+#PBS -A UTAA0012
+#PBS -o gibbs-exp-all.out
+#PBS -e gibbs-exp-all.err
+#PBS -j oe
+
+module load conda
+conda activate gibbs
+
+export HF_HOME=/glade/work/$USER/.cache/huggingface
+cd $HOME/Gibbs-VLA-Overshoot
+mkdir -p experiments/outputs
+
+echo "=== GPU Info ==="
+nvidia-smi
+echo ""
+
+# ---------- exp01: Z-axis, bridge_orig, 150 steps, switch@60 ----------
+echo "========== exp01 =========="
+python -m experiments.openvla_swap_experiment \
+    --output experiments/outputs/exp01_dz_bridge_150.png \
+    --total-steps 150 --switch-step 60 --axis 2 \
+    --unnorm-key bridge_orig
+echo ""
+
+# ---------- exp02: X-axis, raw (none), 100 steps, switch@50 ----------
+echo "========== exp02 =========="
+python -m experiments.openvla_swap_experiment \
+    --output experiments/outputs/exp02_dx_raw_100.png \
+    --total-steps 100 --switch-step 50 --axis 0 \
+    --unnorm-key none
+echo ""
+
+# ---------- exp03: Y-axis, raw (none), 100 steps, switch@50 ----------
+echo "========== exp03 =========="
+python -m experiments.openvla_swap_experiment \
+    --output experiments/outputs/exp03_dy_raw_100.png \
+    --total-steps 100 --switch-step 50 --axis 1 \
+    --unnorm-key none
+echo ""
+
+# ---------- exp04: Z-axis, raw (none), 100 steps, switch@50 ----------
+echo "========== exp04 =========="
+python -m experiments.openvla_swap_experiment \
+    --output experiments/outputs/exp04_dz_raw_100.png \
+    --total-steps 100 --switch-step 50 --axis 2 \
+    --unnorm-key none
+echo ""
+
+# ---------- exp05: X-axis, bridge_orig, early switch@25 ----------
+echo "========== exp05 =========="
+python -m experiments.openvla_swap_experiment \
+    --output experiments/outputs/exp05_dx_early_switch.png \
+    --total-steps 100 --switch-step 25 --axis 0 \
+    --unnorm-key bridge_orig
+echo ""
+
+# ---------- exp06: X-axis, max contrast instructions ----------
+echo "========== exp06 =========="
+python -m experiments.openvla_swap_experiment \
+    --output experiments/outputs/exp06_dx_sushi_drawer.png \
+    --total-steps 100 --switch-step 50 --axis 0 \
+    --unnorm-key bridge_orig \
+    --instruction-a "pick up the sushi" \
+    --instruction-b "close the drawer"
+echo ""
+
+# ---------- exp07: Z-axis, max contrast instructions ----------
+echo "========== exp07 =========="
+python -m experiments.openvla_swap_experiment \
+    --output experiments/outputs/exp07_dz_sushi_drawer.png \
+    --total-steps 100 --switch-step 50 --axis 2 \
+    --unnorm-key bridge_orig \
+    --instruction-a "pick up the sushi" \
+    --instruction-b "close the drawer"
+echo ""
+
+# ---------- exp08: X-axis, raw, long rollout, different pair ----------
+echo "========== exp08 =========="
+python -m experiments.openvla_swap_experiment \
+    --output experiments/outputs/exp08_dx_raw_long.png \
+    --total-steps 200 --switch-step 100 --axis 0 \
+    --unnorm-key none \
+    --instruction-a "put the corn in the pot" \
+    --instruction-b "move the cloth to the right"
+echo ""
+
+# ---------- exp09: gripper axis, pick vs close ----------
+echo "========== exp09 =========="
+python -m experiments.openvla_swap_experiment \
+    --output experiments/outputs/exp09_grip_pick_close.png \
+    --total-steps 100 --switch-step 50 --axis 6 \
+    --unnorm-key bridge_orig \
+    --instruction-a "pick up the red block" \
+    --instruction-b "close the drawer"
+echo ""
+
+# ---------- exp10: Z-axis, raw, early switch, high contrast ----------
+echo "========== exp10 =========="
+python -m experiments.openvla_swap_experiment \
+    --output experiments/outputs/exp10_dz_raw_early_contrast.png \
+    --total-steps 150 --switch-step 40 --axis 2 \
+    --unnorm-key none \
+    --instruction-a "pick up the sushi" \
+    --instruction-b "push the blue block to the left"
+echo ""
+
+echo "========== ALL EXPERIMENTS DONE =========="
+echo ""
+
+# Summarize all results
+echo "========== SUMMARY =========="
+for f in experiments/outputs/exp*.json; do
+    name=$(basename "$f" .json)
+    overshoot=$(python -c "import json; d=json.load(open('$f')); print(f'{d[\"overshoot_percent\"]:.4f}%')" 2>/dev/null || echo "ERROR")
+    plaw=$(python -c "import json; d=json.load(open('$f')); print(f'{d[\"power_law_exponent\"]:.4f}')" 2>/dev/null || echo "ERROR")
+    echo "$name: overshoot=$overshoot, power_law=$plaw"
+done
