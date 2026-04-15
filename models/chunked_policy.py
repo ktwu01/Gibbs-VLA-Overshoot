@@ -22,14 +22,24 @@ from PIL import Image
 
 
 def _patch_lerobot_groot():
-    """Patch around LeRobot groot dataclass bug in Python 3.12."""
+    """Patch around LeRobot groot dataclass bug in Python 3.12.
+    Must be called BEFORE any lerobot.policies import."""
     if 'lerobot.policies.groot' not in sys.modules:
         mock = types.ModuleType('lerobot.policies.groot')
         mock_cfg = types.ModuleType('lerobot.policies.groot.configuration_groot')
         mock_cfg.GrootConfig = type('GrootConfig', (), {})
+        mock_init = types.ModuleType('lerobot.policies.groot.__init__')
         sys.modules['lerobot.policies.groot'] = mock
         sys.modules['lerobot.policies.groot.configuration_groot'] = mock_cfg
-        sys.modules['lerobot.policies.groot.__init__'] = mock
+        sys.modules['lerobot.policies.groot.__init__'] = mock_init
+        # Also mock the modeling module that factory.py imports
+        mock_modeling = types.ModuleType('lerobot.policies.groot.modeling_groot')
+        mock_modeling.GrootPolicy = type('GrootPolicy', (), {})
+        sys.modules['lerobot.policies.groot.modeling_groot'] = mock_modeling
+
+
+# Apply patch at module load time (before any lerobot import)
+_patch_lerobot_groot()
 
 
 class ChunkedVLAPolicy:
@@ -72,10 +82,7 @@ class ChunkedVLAPolicy:
         self.device = device
         self.n_action_steps = n_action_steps
 
-        # Patch groot import bug before loading LeRobot policies
-        _patch_lerobot_groot()
-
-        # Detect model type and load
+        # Detect model type and load (patch already applied at module load time)
         if "smolvla" in model_id.lower():
             from lerobot.policies.smolvla.modeling_smolvla import SmolVLAPolicy
             self.policy = SmolVLAPolicy.from_pretrained(model_id)
@@ -98,7 +105,8 @@ class ChunkedVLAPolicy:
 
     @property
     def action_dim(self) -> int:
-        return self.policy.config.action_dim
+        return getattr(self.policy.config, 'action_dim',
+                       getattr(self.policy.config, 'max_action_dim', 7))
 
     @property
     def chunk_size(self) -> int:
