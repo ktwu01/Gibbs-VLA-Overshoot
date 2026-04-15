@@ -136,3 +136,42 @@ For a VLA to exhibit Gibbs-like overshoot, it would need:
 - Test on **action-chunking models** (ACT, VQ-BeT) where temporal interpolation between chunks could produce overshoot
 - Test with **real closed-loop rollouts** where observation feedback creates temporal coupling
 - The mock policy (6.26% overshoot) succeeds because it uses hash-seeded random generation with noise — the noise acts as a bandwidth-limited perturbation
+
+---
+
+## Round 3: pi0 action-chunking experiments (2026-04-15)
+
+**Model:** pi0_base (4B params, flow-matching, 50-action chunks, 32-dim actions)
+**Env:** gibbs312 (Python 3.12, transformers 5.5.4, lerobot 0.5.2)
+
+### Results
+
+| ID | n_action_steps | Overshoot % | Peak Velocity | Power Law | Instructions |
+|----|---------------|-------------|---------------|-----------|-------------|
+| r3_exp07 | 50 | **1027.5%** | 1.031 | -0.073 | default |
+| r3_exp_c25 | 25 | **923.9%** | 1.245 | -0.069 | default |
+| r3_exp_c10 | 10 | **1367.8%** | 1.263 | -0.098 | default |
+| r3_exp_c1 | 1 | **1048.1%** | 1.383 | -0.193 | default |
+| r3_exp_sushi | 50 | **527.7%** | 1.061 | -0.140 | sushi/drawer |
+
+### Analysis
+
+**Massive overshoot detected (500-1400%) but NOT Gibbs-like.**
+
+Key observations:
+1. **Overshoot does NOT scale with n_action_steps**: c=1 (1048%) ≈ c=50 (1028%). If this were chunk-boundary Gibbs ringing, c=1 should show near-zero overshoot (re-plan every step).
+2. **Per-axis overshoot is chaotic**: dim13 shows 41610%, dim12 shows 41058%. This is noise, not a clean ~9% overshoot.
+3. **high_band_ratio ~0.5**: half the spectral energy is high-frequency, indicating chaotic/noisy output, not step-like transient.
+4. **velocity_p95 > 0**: unlike OpenVLA (always 0), pi0 produces continuously varying actions, but this is noise not signal.
+
+**Root cause: Out-of-distribution inputs.**
+- Synthetic observation (colored rectangles) ≠ real robot scene
+- Zero robot state (32 dims) ≠ real joint positions
+- Same image on all 3 cameras (base, left wrist, right wrist) ≠ real multi-view
+- pi0 was trained on bimanual manipulation (32-DOF), not Bridge V2 (7-DOF)
+- The model produces effectively random/chaotic actions on these OOD inputs
+
+**Conclusion:** The overshoot is model instability on OOD inputs, not Gibbs ringing from temporal coupling. To test the Gibbs hypothesis properly, we need:
+1. Real robot observations (or a realistic simulator)
+2. A model trained on the same observation distribution
+3. In-distribution state inputs
