@@ -29,12 +29,11 @@ def _patch_lerobot_groot():
         mock_cfg = types.ModuleType('lerobot.policies.groot.configuration_groot')
         mock_cfg.GrootConfig = type('GrootConfig', (), {})
         mock_init = types.ModuleType('lerobot.policies.groot.__init__')
+        mock_modeling = types.ModuleType('lerobot.policies.groot.modeling_groot')
+        mock_modeling.GrootPolicy = type('GrootPolicy', (), {})
         sys.modules['lerobot.policies.groot'] = mock
         sys.modules['lerobot.policies.groot.configuration_groot'] = mock_cfg
         sys.modules['lerobot.policies.groot.__init__'] = mock_init
-        # Also mock the modeling module that factory.py imports
-        mock_modeling = types.ModuleType('lerobot.policies.groot.modeling_groot')
-        mock_modeling.GrootPolicy = type('GrootPolicy', (), {})
         sys.modules['lerobot.policies.groot.modeling_groot'] = mock_modeling
 
 
@@ -55,16 +54,6 @@ class ChunkedVLAPolicy:
       4. When the instruction changes mid-chunk, the buffer may still
          contain actions from the OLD instruction — this is the source
          of potential Gibbs-like overshoot.
-
-    Parameters
-    ----------
-    model_id:
-        HuggingFace model identifier, e.g. ``"lerobot/smolvla_base"``.
-    n_action_steps:
-        Number of actions to execute from each chunk before re-planning.
-        Set to 1 for near-memoryless behavior, chunk_size for full open-loop.
-    device:
-        Torch device string.
     """
 
     def __init__(
@@ -81,16 +70,19 @@ class ChunkedVLAPolicy:
 
         self.device = device
         self.n_action_steps = n_action_steps
+        self._model_id = model_id
 
-        # Detect model type and load (patch already applied at module load time)
+        # Detect model type and load
         if "smolvla" in model_id.lower():
+            self._model_type = "smolvla"
             from lerobot.policies.smolvla.modeling_smolvla import SmolVLAPolicy
             self.policy = SmolVLAPolicy.from_pretrained(model_id)
         elif "pi0" in model_id.lower():
+            self._model_type = "pi0"
             from lerobot.policies.pi0.modeling_pi0 import PI0Policy
             self.policy = PI0Policy.from_pretrained(model_id)
         else:
-            raise ValueError(f"Unknown model type in '{model_id}'. Expected 'pi0' or 'smolvla'.")
+            raise ValueError(f"Unknown model type in '{model_id}'.")
 
         self.policy.to(device)
         self.policy.eval()
@@ -102,6 +94,24 @@ class ChunkedVLAPolicy:
         self._action_buffer = None
         self._buffer_idx = 0
         self._last_instruction = None
+
+        # Load tokenizer
+        self._init_tokenizer()
+
+    def _init_tokenizer(self):
+        """Initialize the text tokenizer for instruction encoding."""
+        from transformers import AutoTokenizer
+
+        if self._model_type == "pi0":
+            tokenizer_name = "google/paligemma-3b-pt-224"
+            self._max_length = getattr(self.policy.config, 'tokenizer_max_length', 48)
+        else:
+            # SmolVLA uses the VLM's tokenizer
+            vlm_name = getattr(self.policy.config, 'vlm_model_name', 'HuggingFaceTB/SmolVLM2-256M-Video-Instruct')
+            tokenizer_name = vlm_name
+            self._max_length = getattr(self.policy.config, 'tokenizer_max_length', 77)
+
+        self._tokenizer = AutoTokenizer.from_pretrained(tokenizer_name)
 
     @property
     def action_dim(self) -> int:
@@ -121,45 +131,48 @@ class ChunkedVLAPolicy:
 
     def _prepare_batch(self, observation: np.ndarray, instruction: str) -> dict:
         """Build the batch dict expected by LeRobot policies."""
-        # Image: (H, W, 3) uint8 -> (1, H, W, 3) float32 [0, 1]
+        from lerobot.utils.constants import OBS_LANGUAGE_TOKENS, OBS_LANGUAGE_ATTENTION_MASK
+
+        # Image: (H, W, 3) uint8 -> (1, C, H, W) float32 [0, 1]
         image = np.asarray(observation, dtype=np.uint8)
         image_tensor = torch.from_numpy(image).float() / 255.0
-        image_tensor = image_tensor.unsqueeze(0).to(self.device)
+        # HWC -> CHW
+        image_tensor = image_tensor.permute(2, 0, 1).unsqueeze(0).to(self.device)
 
-        # State: zeros (we don't have real robot state)
-        state_dim = getattr(self.policy.config, 'max_state_dim',
-                           getattr(self.policy.config, 'state_dim', 7))
+        # Resize to expected resolution
+        img_res = getattr(self.policy.config, 'image_resolution', 224)
+        if image_tensor.shape[-1] != img_res or image_tensor.shape[-2] != img_res:
+            image_tensor = torch.nn.functional.interpolate(
+                image_tensor, size=(img_res, img_res), mode='bilinear', align_corners=False
+            )
+
+        # State: zeros
+        state_dim = getattr(self.policy.config, 'max_state_dim', 32)
         state = torch.zeros(1, state_dim, device=self.device)
 
-        # Tokenize instruction
-        processor = self.policy.processor
-        task_text = instruction.strip()
-
-        # Use the processor's tokenizer step
-        from lerobot.utils.constants import OBS_LANGUAGE_TOKENS, OBS_LANGUAGE_ATTENTION_MASK
-        tokenizer = None
-        for step in processor.steps:
-            if hasattr(step, 'tokenizer'):
-                tokenizer = step.tokenizer
-                break
-
-        if tokenizer is None:
-            raise RuntimeError("Could not find tokenizer in policy processor")
-
-        encoded = tokenizer(
+        # Tokenize instruction (add newline for PaliGemma compatibility)
+        task_text = instruction.strip() + "\n"
+        encoded = self._tokenizer(
             task_text,
             return_tensors="pt",
             padding="max_length",
-            max_length=77,
+            max_length=self._max_length,
             truncation=True,
         )
 
-        batch = {
-            "observations.images.0": image_tensor,
-            "observations.state": state,
-            OBS_LANGUAGE_TOKENS: encoded["input_ids"].to(self.device),
-            OBS_LANGUAGE_ATTENTION_MASK: encoded["attention_mask"].to(self.device),
-        }
+        # Build batch with the image feature keys the model expects
+        batch = {}
+
+        # Image keys: try config.image_features first, fall back to common names
+        img_keys = list(getattr(self.policy.config, 'image_features', {}).keys())
+        if not img_keys:
+            img_keys = ["observation.images.top"]  # common LeRobot key
+        batch[img_keys[0]] = image_tensor
+
+        batch["observation.state"] = state
+        batch[OBS_LANGUAGE_TOKENS] = encoded["input_ids"].to(self.device)
+        batch[OBS_LANGUAGE_ATTENTION_MASK] = encoded["attention_mask"].to(self.device)
+
         return batch
 
     def _generate_chunk(self, observation: np.ndarray, instruction: str) -> np.ndarray:
@@ -167,10 +180,10 @@ class ChunkedVLAPolicy:
         batch = self._prepare_batch(observation, instruction)
 
         with torch.no_grad():
-            # predict_action_chunk returns (1, n_action_steps, action_dim)
             actions = self.policy.predict_action_chunk(batch)
 
-        return actions[0].cpu().numpy()  # (n_action_steps, action_dim)
+        # actions shape: (1, n_action_steps, action_dim)
+        return actions[0].cpu().numpy()
 
     def predict(self, observation: np.ndarray, instruction: str) -> np.ndarray:
         """

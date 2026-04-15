@@ -20,120 +20,79 @@ nvidia-smi
 echo ""
 
 # ============================================================
-# ROUND 3: Chunked-action models (SmolVLA + pi0)
-# Hypothesis: Action chunks create temporal coupling.
-# Key variable: n_action_steps (chunk execution length).
+# ROUND 3: pi0 action-chunking experiments
+# Focus on pi0 first (SmolVLA has extra dep issues)
+# Key variable: n_action_steps (chunk execution length)
 # ============================================================
 
-# ---------- SmolVLA experiments ----------
-
-echo "========== r3_exp01: SmolVLA chunk=50 (full open-loop) =========="
-python -m experiments.chunked_swap_experiment \
-    --model lerobot/smolvla_base \
-    --n-action-steps 50 \
-    --output experiments/outputs/r3_exp01_smolvla_c50.png \
-    --total-steps 100 --switch-step 50 --axis 0
-echo ""
-
-echo "========== r3_exp02: SmolVLA chunk=25 =========="
-python -m experiments.chunked_swap_experiment \
-    --model lerobot/smolvla_base \
-    --n-action-steps 25 \
-    --output experiments/outputs/r3_exp02_smolvla_c25.png \
-    --total-steps 100 --switch-step 50 --axis 0
-echo ""
-
-echo "========== r3_exp03: SmolVLA chunk=10 =========="
-python -m experiments.chunked_swap_experiment \
-    --model lerobot/smolvla_base \
-    --n-action-steps 10 \
-    --output experiments/outputs/r3_exp03_smolvla_c10.png \
-    --total-steps 100 --switch-step 50 --axis 0
-echo ""
-
-echo "========== r3_exp04: SmolVLA chunk=5 =========="
-python -m experiments.chunked_swap_experiment \
-    --model lerobot/smolvla_base \
-    --n-action-steps 5 \
-    --output experiments/outputs/r3_exp04_smolvla_c5.png \
-    --total-steps 100 --switch-step 50 --axis 0
-echo ""
-
-echo "========== r3_exp05: SmolVLA chunk=1 (near-memoryless control) =========="
-python -m experiments.chunked_swap_experiment \
-    --model lerobot/smolvla_base \
-    --n-action-steps 1 \
-    --output experiments/outputs/r3_exp05_smolvla_c1.png \
-    --total-steps 100 --switch-step 50 --axis 0
-echo ""
-
-# ---------- SmolVLA with different instruction pairs ----------
-
-echo "========== r3_exp06: SmolVLA chunk=50, sushi vs drawer =========="
-python -m experiments.chunked_swap_experiment \
-    --model lerobot/smolvla_base \
-    --n-action-steps 50 \
-    --output experiments/outputs/r3_exp06_smolvla_c50_sushi.png \
-    --total-steps 100 --switch-step 50 --axis 0 \
-    --instruction-a "pick up the sushi" \
-    --instruction-b "close the drawer"
-echo ""
-
-# ---------- pi0 experiments ----------
-
+# Start with a single test to verify the pipeline works
 echo "========== r3_exp07: pi0 chunk=50 (full open-loop) =========="
 python -m experiments.chunked_swap_experiment \
     --model lerobot/pi0_base \
     --n-action-steps 50 \
     --output experiments/outputs/r3_exp07_pi0_c50.png \
-    --total-steps 100 --switch-step 50 --axis 0
+    --total-steps 100 --switch-step 50 --axis 0 2>&1
+echo "EXIT CODE: $?"
 echo ""
 
-echo "========== r3_exp08: pi0 chunk=25 =========="
-python -m experiments.chunked_swap_experiment \
-    --model lerobot/pi0_base \
-    --n-action-steps 25 \
-    --output experiments/outputs/r3_exp08_pi0_c25.png \
-    --total-steps 100 --switch-step 50 --axis 0
-echo ""
+# If the first one succeeds, run the rest
+if [ -f experiments/outputs/r3_exp07_pi0_c50.json ]; then
+    echo "First experiment succeeded! Running sweep..."
 
-echo "========== r3_exp09: pi0 chunk=10 =========="
-python -m experiments.chunked_swap_experiment \
-    --model lerobot/pi0_base \
-    --n-action-steps 10 \
-    --output experiments/outputs/r3_exp09_pi0_c10.png \
-    --total-steps 100 --switch-step 50 --axis 0
-echo ""
+    echo "========== r3_exp08: pi0 chunk=25 =========="
+    python -m experiments.chunked_swap_experiment \
+        --model lerobot/pi0_base \
+        --n-action-steps 25 \
+        --output experiments/outputs/r3_exp08_pi0_c25.png \
+        --total-steps 100 --switch-step 50 --axis 0 2>&1
+    echo ""
 
-echo "========== r3_exp10: pi0 chunk=1 (near-memoryless control) =========="
-python -m experiments.chunked_swap_experiment \
-    --model lerobot/pi0_base \
-    --n-action-steps 1 \
-    --output experiments/outputs/r3_exp10_pi0_c1.png \
-    --total-steps 100 --switch-step 50 --axis 0
-echo ""
+    echo "========== r3_exp09: pi0 chunk=10 =========="
+    python -m experiments.chunked_swap_experiment \
+        --model lerobot/pi0_base \
+        --n-action-steps 10 \
+        --output experiments/outputs/r3_exp09_pi0_c10.png \
+        --total-steps 100 --switch-step 50 --axis 0 2>&1
+    echo ""
 
-echo "========== ALL ROUND 3 EXPERIMENTS DONE =========="
-echo ""
+    echo "========== r3_exp10: pi0 chunk=1 (near-memoryless) =========="
+    python -m experiments.chunked_swap_experiment \
+        --model lerobot/pi0_base \
+        --n-action-steps 1 \
+        --output experiments/outputs/r3_exp10_pi0_c1.png \
+        --total-steps 100 --switch-step 50 --axis 0 2>&1
+    echo ""
 
-# Summarize all round 3 results
-echo "========== ROUND 3 SUMMARY =========="
+    echo "========== r3_exp11: pi0 chunk=50, sushi vs drawer =========="
+    python -m experiments.chunked_swap_experiment \
+        --model lerobot/pi0_base \
+        --n-action-steps 50 \
+        --output experiments/outputs/r3_exp11_pi0_c50_sushi.png \
+        --total-steps 100 --switch-step 50 --axis 0 \
+        --instruction-a "pick up the sushi" \
+        --instruction-b "close the drawer" 2>&1
+    echo ""
+else
+    echo "FIRST EXPERIMENT FAILED - see errors above"
+    echo "Dumping full traceback:"
+    cat experiments/outputs/r3_exp07_pi0_c50.png 2>/dev/null || true
+fi
+
+echo "========== ALL DONE =========="
+
+# Summary
+echo "========== SUMMARY =========="
 for f in experiments/outputs/r3_exp*.json; do
+    [ -f "$f" ] || continue
     name=$(basename "$f" .json)
-    overshoot=$(python -c "import json; d=json.load(open('$f')); print(f'{d[\"overshoot_percent\"]:.4f}%')" 2>/dev/null || echo "ERROR")
-    plaw=$(python -c "import json; d=json.load(open('$f')); print(f'{d[\"power_law_exponent\"]:.4f}')" 2>/dev/null || echo "ERROR")
-    nas=$(python -c "import json; d=json.load(open('$f')); print(d['n_action_steps'])" 2>/dev/null || echo "?")
-    model=$(python -c "import json; d=json.load(open('$f')); print(d['model'].split('/')[-1])" 2>/dev/null || echo "?")
-    max_axis=$(python -c "
+    python -c "
 import json
 d=json.load(open('$f'))
+print(f'$name: ov={d[\"overshoot_percent\"]:.4f}%, n_as={d[\"n_action_steps\"]}, plaw={d[\"power_law_exponent\"]:.4f}')
 pa = d.get('per_axis_overshoot_percent', {})
 valid = {k:v for k,v in pa.items() if v==v and abs(v)>1e-10}
 if valid:
-    best_k = max(valid, key=lambda x: abs(valid[x]))
-    print(f'{valid[best_k]:.4f}% ({best_k})')
-else:
-    print('0.0%')
-" 2>/dev/null || echo "ERROR")
-    echo "$name ($model, n_as=$nas): overshoot=$overshoot, max_axis=$max_axis, plaw=$plaw"
+    best = max(valid, key=lambda x: abs(valid[x]))
+    print(f'  max_axis: {valid[best]:.4f}% ({best})')
+" 2>/dev/null || echo "$name: PARSE ERROR"
 done
