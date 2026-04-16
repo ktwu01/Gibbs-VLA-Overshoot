@@ -199,11 +199,18 @@ Key observations:
 
 ### Status
 
-**Results: NOT YET AVAILABLE** as of 2026-04-16.
+**Results: NOT YET AVAILABLE** as of 2026-04-16 (status check at 15:05 UTC).
 
 - `gibbs-round4.out` does not exist — PBS job has not yet run or not yet written output
 - No `experiments/outputs/r4_*.json` files found
-- Last commit: `d766270` (2026-04-15 PM) — added lessons learned + paper strategy; Round 4 submitted
+- Last commit: `2801477` (2026-04-16) — added Round 4 pending entry to exp_record.md
+- Previous commit: `d766270` (2026-04-15 PM) — added lessons learned + paper strategy; Round 4 submitted
+
+**Status check log:**
+
+| Check Time | r4 JSONs | gibbs-round4.out | PBS Status |
+|-----------|----------|-----------------|------------|
+| 2026-04-16 15:05 UTC | 0 files | absent | NOT STARTED / IN QUEUE |
 
 ### What to look for when results arrive
 
