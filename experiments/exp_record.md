@@ -213,6 +213,7 @@ Key observations:
 | 2026-04-16 15:05 UTC | 0 files | absent | NOT STARTED / IN QUEUE |
 | 2026-04-16 16:02 UTC | 0 files | absent | STILL PENDING — no output yet |
 | 2026-04-16 (latest) | 0 files | absent | STILL PENDING — PBS job not yet completed |
+| 2026-04-16 (check 4) | 0 files | absent | STILL PENDING — no r4 output after 4 status checks |
 
 ### What to look for when results arrive
 
