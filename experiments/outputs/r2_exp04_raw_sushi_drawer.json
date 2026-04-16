@@ -1,0 +1,30 @@
+{
+  "model": "openvla/openvla-7b",
+  "dataset": "bridge_v2",
+  "episode_index": 0,
+  "original_instruction": "pick up the red block",
+  "instruction_a": "pick up the sushi",
+  "instruction_b": "close the drawer",
+  "total_steps": 100,
+  "switch_step": 50,
+  "fs_hz": 5.0,
+  "unnorm_key": "none",
+  "per_axis_overshoot_percent": {
+    "dx": 0.0,
+    "dy": 0.0,
+    "dz": 0.0,
+    "droll": -1.2416968038570831e-14,
+    "dpitch": 0.0,
+    "dyaw": -1.45931376948152e-14,
+    "grip": -2.2291879628300383e-14
+  },
+  "analysis_axis": 0,
+  "overshoot_ratio": 0.0,
+  "overshoot_percent": 0.0,
+  "peak_velocity": 0.9803921568627452,
+  "peak_acceleration": 2.450980392156863,
+  "power_law_exponent": 0.304860631445613,
+  "high_band_ratio": 0.08931563886292693,
+  "velocity_mean": 0.0196078431372549,
+  "velocity_p95": 0.0
+}

@@ -1,0 +1,30 @@
+{
+  "model": "openvla/openvla-7b",
+  "dataset": "bridge_v2",
+  "episode_index": 2,
+  "original_instruction": "put the corn in the pot",
+  "instruction_a": "put the corn in the pot",
+  "instruction_b": "push the blue block to the left",
+  "total_steps": 100,
+  "switch_step": 50,
+  "fs_hz": 5.0,
+  "unnorm_key": "none",
+  "per_axis_overshoot_percent": {
+    "dx": 0.0,
+    "dy": 0.0,
+    "dz": 0.0,
+    "droll": 0.0,
+    "dpitch": -1.4155343563970744e-14,
+    "dyaw": 0.0,
+    "grip": NaN
+  },
+  "analysis_axis": 0,
+  "overshoot_ratio": 0.0,
+  "overshoot_percent": 0.0,
+  "peak_velocity": 0.03921568627450994,
+  "peak_acceleration": 0.09803921568627486,
+  "power_law_exponent": 0.48371349288879734,
+  "high_band_ratio": 0.0893156388629272,
+  "velocity_mean": 0.0007843137254901989,
+  "velocity_p95": 0.0
+}

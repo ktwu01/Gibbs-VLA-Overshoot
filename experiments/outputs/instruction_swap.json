@@ -1,0 +1,18 @@
+{
+  "instruction_a": "push the red block to the blue block",
+  "instruction_b": "push the blue block to the green block",
+  "total_steps": 100,
+  "switch_step": 50,
+  "fs_hz": 10.0,
+  "action_dim": 7,
+  "noise_std": 0.02,
+  "analysis_axis": 0,
+  "overshoot_ratio": 0.06257459093942995,
+  "overshoot_percent": 6.257459093942995,
+  "peak_velocity": 4.518927903485097,
+  "peak_acceleration": 23.123948193003116,
+  "power_law_exponent": -0.0749694386449103,
+  "high_band_ratio": 0.0966599323663936,
+  "velocity_mean": 0.1973105089052352,
+  "velocity_p95": 0.3487778123748156
+}

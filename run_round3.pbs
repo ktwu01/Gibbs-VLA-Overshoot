@@ -4,12 +4,21 @@
 #PBS -l select=1:ncpus=4:mem=64GB:ngpus=1:gpu_type=a100
 #PBS -l walltime=03:00:00
 #PBS -A UTAA0012
-#PBS -o gibbs-round3.out
-#PBS -e gibbs-round3.err
 #PBS -j oe
 
-module load conda
-conda activate gibbs312
+# Force output to known location
+exec > $HOME/Gibbs-VLA-Overshoot/gibbs-round3.out 2>&1
+
+echo "=== START $(date) ==="
+echo "=== Environment ==="
+hostname
+echo "PATH: $PATH"
+
+# Load conda properly for PBS non-login shell
+source /etc/profile.d/conda.sh 2>/dev/null || true
+module load conda 2>/dev/null || true
+conda activate gibbs312 2>/dev/null || source activate gibbs312 2>/dev/null
+echo "Python: $(which python) $(python --version 2>&1)"
 
 export HF_HOME=/glade/work/$USER/.cache/huggingface
 cd $HOME/Gibbs-VLA-Overshoot
@@ -19,80 +28,52 @@ echo "=== GPU Info ==="
 nvidia-smi
 echo ""
 
-# ============================================================
-# ROUND 3: pi0 action-chunking experiments
-# Focus on pi0 first (SmolVLA has extra dep issues)
-# Key variable: n_action_steps (chunk execution length)
-# ============================================================
-
-# Start with a single test to verify the pipeline works
-echo "========== r3_exp07: pi0 chunk=50 (full open-loop) =========="
+# Single test experiment first
+echo "========== r3_exp07: pi0 chunk=50 =========="
 python -m experiments.chunked_swap_experiment \
     --model lerobot/pi0_base \
     --n-action-steps 50 \
     --output experiments/outputs/r3_exp07_pi0_c50.png \
     --total-steps 100 --switch-step 50 --axis 0 2>&1
-echo "EXIT CODE: $?"
+RC=$?
+echo "EXIT CODE: $RC"
 echo ""
 
-# If the first one succeeds, run the rest
-if [ -f experiments/outputs/r3_exp07_pi0_c50.json ]; then
-    echo "First experiment succeeded! Running sweep..."
+if [ $RC -eq 0 ] && [ -f experiments/outputs/r3_exp07_pi0_c50.json ]; then
+    echo "=== FIRST EXPERIMENT SUCCEEDED! Running sweep ==="
 
-    echo "========== r3_exp08: pi0 chunk=25 =========="
-    python -m experiments.chunked_swap_experiment \
-        --model lerobot/pi0_base \
-        --n-action-steps 25 \
-        --output experiments/outputs/r3_exp08_pi0_c25.png \
-        --total-steps 100 --switch-step 50 --axis 0 2>&1
-    echo ""
+    for NAS in 25 10 1; do
+        echo "========== pi0 chunk=$NAS =========="
+        python -m experiments.chunked_swap_experiment \
+            --model lerobot/pi0_base \
+            --n-action-steps $NAS \
+            --output experiments/outputs/r3_exp_pi0_c${NAS}.png \
+            --total-steps 100 --switch-step 50 --axis 0 2>&1
+        echo ""
+    done
 
-    echo "========== r3_exp09: pi0 chunk=10 =========="
-    python -m experiments.chunked_swap_experiment \
-        --model lerobot/pi0_base \
-        --n-action-steps 10 \
-        --output experiments/outputs/r3_exp09_pi0_c10.png \
-        --total-steps 100 --switch-step 50 --axis 0 2>&1
-    echo ""
-
-    echo "========== r3_exp10: pi0 chunk=1 (near-memoryless) =========="
-    python -m experiments.chunked_swap_experiment \
-        --model lerobot/pi0_base \
-        --n-action-steps 1 \
-        --output experiments/outputs/r3_exp10_pi0_c1.png \
-        --total-steps 100 --switch-step 50 --axis 0 2>&1
-    echo ""
-
-    echo "========== r3_exp11: pi0 chunk=50, sushi vs drawer =========="
+    echo "========== pi0 chunk=50, sushi vs drawer =========="
     python -m experiments.chunked_swap_experiment \
         --model lerobot/pi0_base \
         --n-action-steps 50 \
-        --output experiments/outputs/r3_exp11_pi0_c50_sushi.png \
+        --output experiments/outputs/r3_exp_pi0_c50_sushi.png \
         --total-steps 100 --switch-step 50 --axis 0 \
         --instruction-a "pick up the sushi" \
         --instruction-b "close the drawer" 2>&1
     echo ""
 else
-    echo "FIRST EXPERIMENT FAILED - see errors above"
-    echo "Dumping full traceback:"
-    cat experiments/outputs/r3_exp07_pi0_c50.png 2>/dev/null || true
+    echo "=== FIRST EXPERIMENT FAILED (rc=$RC) ==="
 fi
 
-echo "========== ALL DONE =========="
+echo "=== ALL DONE $(date) ==="
 
 # Summary
-echo "========== SUMMARY =========="
+echo "=== SUMMARY ==="
 for f in experiments/outputs/r3_exp*.json; do
     [ -f "$f" ] || continue
     name=$(basename "$f" .json)
     python -c "
-import json
-d=json.load(open('$f'))
-print(f'$name: ov={d[\"overshoot_percent\"]:.4f}%, n_as={d[\"n_action_steps\"]}, plaw={d[\"power_law_exponent\"]:.4f}')
-pa = d.get('per_axis_overshoot_percent', {})
-valid = {k:v for k,v in pa.items() if v==v and abs(v)>1e-10}
-if valid:
-    best = max(valid, key=lambda x: abs(valid[x]))
-    print(f'  max_axis: {valid[best]:.4f}% ({best})')
+import json; d=json.load(open('$f'))
+print(f'$name: ov={d[\"overshoot_percent\"]:.4f}%, n_as={d[\"n_action_steps\"]}')
 " 2>/dev/null || echo "$name: PARSE ERROR"
 done

@@ -1,0 +1,30 @@
+{
+  "model": "openvla/openvla-7b",
+  "dataset": "bridge_v2",
+  "episode_index": 0,
+  "original_instruction": "pick up the red block",
+  "instruction_a": "pick up the red block",
+  "instruction_b": "push the blue block to the left",
+  "total_steps": 100,
+  "switch_step": 50,
+  "fs_hz": 5.0,
+  "unnorm_key": "bridge_orig",
+  "per_axis_overshoot_percent": {
+    "dx": 0.0,
+    "dy": 1.2910980002886001e-14,
+    "dz": 0.0,
+    "droll": 0.0,
+    "dpitch": 0.0,
+    "dyaw": 0.0,
+    "grip": 0.0
+  },
+  "analysis_axis": 0,
+  "overshoot_ratio": 0.0,
+  "overshoot_percent": 0.0,
+  "peak_velocity": 0.005591856030856858,
+  "peak_acceleration": 0.013979640077142145,
+  "power_law_exponent": 0.3473062348827359,
+  "high_band_ratio": 0.08931563886292691,
+  "velocity_mean": 0.00011183712061713716,
+  "velocity_p95": 0.0
+}

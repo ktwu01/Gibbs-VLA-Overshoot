@@ -1,0 +1,10 @@
+{
+  "harmonics": 80,
+  "samples": 1500,
+  "overshoot_ratio": 0.09050714641846637,
+  "overshoot_percent": 9.050714641846637,
+  "peak_velocity": 49.707202140378165,
+  "peak_acceleration": 3276.2880329915524,
+  "power_law_exponent": -0.832956493926856,
+  "high_band_ratio": 5.406814883376447e-10
+}
