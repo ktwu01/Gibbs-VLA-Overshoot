@@ -102,17 +102,17 @@ class ChunkedVLAPolicy:
         """Initialize the text tokenizer for instruction encoding."""
         from transformers import AutoTokenizer
 
+        self._max_length = getattr(self.policy.config, 'tokenizer_max_length', 48)
+
         if self._model_type == "pi0":
             # PaliGemma uses the Gemma tokenizer. The official repo
             # (google/paligemma-3b-pt-224) is gated, so we use an
             # ungated mirror with the same tokenizer vocabulary.
             tokenizer_name = "unsloth/gemma-2b"
-            self._max_length = getattr(self.policy.config, 'tokenizer_max_length', 48)
         else:
             vlm_name = getattr(self.policy.config, 'vlm_model_name',
                                'HuggingFaceTB/SmolVLM2-256M-Video-Instruct')
             tokenizer_name = vlm_name
-            self._max_length = getattr(self.policy.config, 'tokenizer_max_length', 77)
 
         self._tokenizer = AutoTokenizer.from_pretrained(tokenizer_name)
 
@@ -143,7 +143,15 @@ class ChunkedVLAPolicy:
         image_tensor = image_tensor.permute(2, 0, 1).unsqueeze(0).to(self.device)
 
         # Resize to expected resolution
-        img_res = getattr(self.policy.config, 'image_resolution', 224)
+        img_res = getattr(self.policy.config, 'image_resolution', None)
+        if img_res is None:
+            # Infer from input_features shape (e.g., [3, 224, 224])
+            img_feats = getattr(self.policy.config, 'image_features', {})
+            if img_feats:
+                first_shape = list(img_feats.values())[0].shape
+                img_res = first_shape[-1]  # last dim of [C, H, W]
+            else:
+                img_res = 224
         if isinstance(img_res, (tuple, list)):
             img_res = img_res[0]
         img_res = int(img_res)

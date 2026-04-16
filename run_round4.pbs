@@ -1,0 +1,112 @@
+#!/bin/bash
+#PBS -N gibbs-round4
+#PBS -q casper
+#PBS -l select=1:ncpus=4:mem=64GB:ngpus=1:gpu_type=a100
+#PBS -l walltime=02:00:00
+#PBS -A UTAA0012
+#PBS -j oe
+
+exec > $HOME/Gibbs-VLA-Overshoot/gibbs-round4.out 2>&1
+
+echo "=== START $(date) ==="
+hostname
+
+source /etc/profile.d/conda.sh 2>/dev/null || true
+module load conda 2>/dev/null || true
+conda activate gibbs312 2>/dev/null || source activate gibbs312 2>/dev/null
+echo "Python: $(which python) $(python --version 2>&1)"
+
+export HF_HOME=/glade/work/$USER/.cache/huggingface
+cd $HOME/Gibbs-VLA-Overshoot
+mkdir -p experiments/outputs
+
+echo "=== GPU Info ==="
+nvidia-smi
+echo ""
+
+# ============================================================
+# ROUND 4: INTACT pi0-finetune-bridge (Bridge V2-trained!)
+#
+# Key differences from Round 3:
+# - Single camera: observation.images.top (matches Bridge V2)
+# - 7-dim actions (Bridge V2 EEF deltas)
+# - chunk_size=4 (small chunks, fast)
+# - Model trained ON Bridge V2 data → in-distribution!
+# ============================================================
+
+MODEL="juexzz/INTACT-pi0-finetune-bridge"
+
+# Sweep n_action_steps: 4 (full chunk), 2, 1 (re-plan every step)
+for NAS in 4 2 1; do
+    echo "========== pi0-bridge chunk=$NAS =========="
+    python -m experiments.chunked_swap_experiment \
+        --model "$MODEL" \
+        --n-action-steps $NAS \
+        --output experiments/outputs/r4_pi0bridge_c${NAS}.png \
+        --total-steps 100 --switch-step 50 --axis 0 2>&1
+    RC=$?
+    echo "EXIT CODE: $RC"
+    echo ""
+
+    if [ $RC -ne 0 ]; then
+        echo "FAILED at chunk=$NAS — stopping sweep"
+        break
+    fi
+done
+
+# If first experiments worked, try different instructions
+if [ -f experiments/outputs/r4_pi0bridge_c4.json ]; then
+    echo "=== Running instruction variants ==="
+
+    echo "========== pi0-bridge c=4, sushi vs drawer =========="
+    python -m experiments.chunked_swap_experiment \
+        --model "$MODEL" \
+        --n-action-steps 4 \
+        --output experiments/outputs/r4_pi0bridge_c4_sushi.png \
+        --total-steps 100 --switch-step 50 --axis 0 \
+        --instruction-a "pick up the sushi" \
+        --instruction-b "close the drawer" 2>&1
+    echo ""
+
+    echo "========== pi0-bridge c=4, corn vs cloth =========="
+    python -m experiments.chunked_swap_experiment \
+        --model "$MODEL" \
+        --n-action-steps 4 \
+        --output experiments/outputs/r4_pi0bridge_c4_corn.png \
+        --total-steps 100 --switch-step 50 --axis 0 \
+        --instruction-a "put the corn in the pot" \
+        --instruction-b "move the cloth to the right" 2>&1
+    echo ""
+
+    # Different axes
+    for AX in 1 2 6; do
+        echo "========== pi0-bridge c=4, axis=$AX =========="
+        python -m experiments.chunked_swap_experiment \
+            --model "$MODEL" \
+            --n-action-steps 4 \
+            --output experiments/outputs/r4_pi0bridge_c4_ax${AX}.png \
+            --total-steps 100 --switch-step 50 --axis $AX 2>&1
+        echo ""
+    done
+fi
+
+echo "=== ALL DONE $(date) ==="
+
+echo "=== SUMMARY ==="
+for f in experiments/outputs/r4_*.json; do
+    [ -f "$f" ] || continue
+    name=$(basename "$f" .json)
+    python -c "
+import json; d=json.load(open('$f'))
+ov = d['overshoot_percent']
+nas = d['n_action_steps']
+pv = d.get('peak_velocity', 0)
+plaw = d.get('power_law_exponent', 0)
+print(f'$name: ov={ov:.4f}%, n_as={nas}, peak_v={pv:.4f}, plaw={plaw:.4f}')
+pa = d.get('per_axis_overshoot_percent', {})
+valid = {k:v for k,v in pa.items() if v==v and abs(v)>1e-10}
+if valid:
+    best = max(valid, key=lambda x: abs(valid[x]))
+    print(f'  max_axis: {valid[best]:.4f}% ({best})')
+" 2>/dev/null || echo "$name: PARSE ERROR"
+done
