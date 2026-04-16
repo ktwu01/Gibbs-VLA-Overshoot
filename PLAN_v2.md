@@ -391,7 +391,69 @@ The instruction-swap runner stays the same — it just calls `policy.predict(obs
 | 2026-04-15 PM | **Conclusion: OpenVLA is memoryless, 0% overshoot** |
 | 2026-04-15 PM | Cloned autoresearch, wrote PLAN_v2 |
 | 2026-04-15 PM | Codex review: pi0 + SmolVLA (action chunking) identified as best candidates |
-| **NEXT** | Install LeRobot + pi0/SmolVLA, implement chunked_policy adapter |
-| **NEXT** | Round 3: 10 experiments varying n_action_steps (chunk execution length) |
-| **NEXT** | If overshoot found: AutoResearch loop to characterize scaling law |
-| **NEXT** | If not: test closed-loop simulation (MuJoCo) for physical overshoot |
+| 2026-04-15 PM | Installed LeRobot (Python 3.12), fixed 6 bugs (groot, tokenizer, attn mask, etc.) |
+| 2026-04-15 PM | Round 3: pi0_base (OOD) → 500-1400% chaotic overshoot (not Gibbs) |
+| 2026-04-15 PM | **Toy chunked model: 8.92% overshoot — matches Gibbs constant!** |
+| 2026-04-15 PM | Found Bridge V2-trained checkpoints: INTACT pi0-bridge, SmolVLA-bridge |
+| 2026-04-15 PM | Submitted Round 4: INTACT pi0-finetune-bridge (in-distribution) |
+| **NEXT** | Round 4 results → first real VLA Gibbs measurement |
+| **NEXT** | Scaling law sweep: overshoot vs chunk_size across models |
+| **NEXT** | SimplerEnv simulation: show overshoot causes task failures |
+| **NEXT** | Mitigation: action blending / RTC / damping to reduce overshoot |
+
+---
+
+## 9. Lessons Learned
+
+### 9.1 What Worked
+- **Systematic parameter sweeps** across axes, unnorm keys, instructions, switch timing
+- **Spectral analysis pipeline** (overshoot ratio, PSD, power law) detected real signals
+- **Toy model with sinusoidal positional encodings** reproduced Gibbs constant (8.92%)
+- **Bridge V2-trained checkpoints exist** on HuggingFace (INTACT, SmolVLA-bridge)
+
+### 9.2 What Failed and Why
+| Failure | Root Cause | Lesson |
+|---------|-----------|--------|
+| OpenVLA 0% overshoot (20 exp) | Memoryless policy: a_t = f(img, instr), no temporal state | Discrete-token VLAs without recurrence/chunking cannot exhibit Gibbs |
+| `unnorm-key none` crash | OpenVLA's predict_action asserts single dataset | Must manually decode tokens when bypassing de-normalization |
+| pi0_base OOD chaos (500-1400%) | Synthetic obs + zero state + 3 identical cameras | OOD inputs → model chaos, not clean transients. Need in-distribution data |
+| LeRobot import failures (6 bugs) | groot dataclass, gated tokenizer, attention mask dtype, etc. | LeRobot 0.5.2 has rough edges; test imports before submitting GPU jobs |
+| PBS output missing | `rm -f output.out` before job ran | Never delete PBS output files; PBS won't recreate them |
+| Synthetic observation bottleneck | HF Bridge V2 data gated, no auth | Set up HF auth early; synthetic data masks real model behavior |
+
+### 9.3 Key Scientific Insights
+1. **Gibbs ringing requires temporal coupling.** A memoryless policy produces a perfect step (zero overshoot). A chunked policy with temporal basis functions (positional encodings) produces Gibbs ringing.
+2. **The truncation order analog is `n_action_steps / chunk_size`.** More committed actions = more "inertia" = more overshoot (in principle — needs in-distribution data to verify).
+3. **OOD chaos ≠ Gibbs ringing.** High overshoot on out-of-distribution inputs is noise, not a clean 9% overshoot. Must separate signal from chaos.
+4. **Chunk size 4 (INTACT) vs 50 (pi0_base)** — shorter chunks may show less overshoot but cleaner signal. Need to test both.
+
+### 9.4 What's Needed for a Top Conference Paper
+
+Per AI conference writing guide (hzwer/WritingAIPaper):
+- Core contribution type: **Insight** — "Explaining a new phenomenon"
+- Key quote: "Discovering new phenomena and sharing new ideas matter more than performance gains."
+
+**4 pillars needed:**
+
+1. **Real VLA + real data showing ~9% Gibbs overshoot**
+   - INTACT pi0-finetune-bridge (Round 4, submitted)
+   - SmolVLA-bridge (backup)
+   - Must show clean, reproducible overshoot on multiple instruction pairs
+
+2. **Scaling law: overshoot vs temporal coupling**
+   - Sweep n_action_steps = {1, 2, 4} on INTACT (chunk_size=4)
+   - Sweep chunk_size across models (4, 10, 50)
+   - Plot overshoot% vs coupling strength → should converge to 8.95%
+
+3. **Downstream impact: overshoot causes real failures**
+   - Use SimplerEnv (Bridge V2 simulator) to show:
+     - Instruction swap during task → object drop / collision
+     - Overshoot amplitude correlates with failure rate
+   - This proves it's not just a signal processing curiosity
+
+4. **Mitigation: reduce overshoot, improve task success**
+   - Action blending at chunk boundaries (exponential smoothing)
+   - RTC (Real-Time Chunking) from LeRobot — already designed for this
+   - Compare task success rate: with vs without mitigation
+
+**Toy model role in paper:** Figure 1 / Section 3 — "Theoretical analysis" proving the Gibbs constant emerges from sinusoidal basis functions. Not the main result, but the explanatory backbone.
