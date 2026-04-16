@@ -175,3 +175,41 @@ Key observations:
 1. Real robot observations (or a realistic simulator)
 2. A model trained on the same observation distribution
 3. In-distribution state inputs
+
+---
+
+## Round 4: INTACT pi0-finetune-bridge — PENDING (2026-04-16)
+
+**Model:** juexzz/INTACT-pi0-finetune-bridge (Bridge V2-trained, single camera `observation.images.top`, 7-dim EEF delta actions)
+**Env:** gibbs312 (Python 3.12)
+**Script:** `run_round4.pbs` — PBS job submitted to NCAR Casper (A100 80GB, 2h walltime)
+
+### Planned experiments
+
+| ID | n_action_steps | chunk_size | Axis | Instructions | Rationale |
+|----|---------------|------------|------|-------------|-----------|
+| r4_pi0bridge_c4 | 4 | 4 | 0 (dx) | default | Full-chunk execution, in-distribution model |
+| r4_pi0bridge_c2 | 2 | 4 | 0 (dx) | default | Half-chunk — tests overshoot vs coupling depth |
+| r4_pi0bridge_c1 | 1 | 4 | 0 (dx) | default | Memoryless baseline — should show 0% if chunking drives it |
+| r4_pi0bridge_c4_sushi | 4 | 4 | 0 (dx) | sushi / drawer | High semantic contrast |
+| r4_pi0bridge_c4_corn | 4 | 4 | 0 (dx) | corn / cloth | Alternative contrast pair |
+| r4_pi0bridge_c4_ax1 | 4 | 4 | 1 (dy) | default | Y-axis sweep |
+| r4_pi0bridge_c4_ax2 | 4 | 4 | 2 (dz) | default | Z-axis sweep |
+| r4_pi0bridge_c4_ax6 | 4 | 4 | 6 (grip) | default | Gripper axis |
+
+### Status
+
+**Results: NOT YET AVAILABLE** as of 2026-04-16.
+
+- `gibbs-round4.out` does not exist — PBS job has not yet run or not yet written output
+- No `experiments/outputs/r4_*.json` files found
+- Last commit: `d766270` (2026-04-15 PM) — added lessons learned + paper strategy; Round 4 submitted
+
+### What to look for when results arrive
+
+- **SUCCESS:** Any axis showing overshoot within 5.95%–11.95% (±3% of 8.95%)
+- **PARTIAL:** Non-zero overshoot outside that range
+- **CHAOTIC:** Overshoot >100% (still OOD noise despite in-distribution model)
+- **ZERO:** ~0% overshoot (model is also memoryless / chunking not sufficient)
+
+Key diagnostic: if `r4_pi0bridge_c1` (n_action_steps=1) shows ~0% and `r4_pi0bridge_c4` shows >0%, that is strong evidence the chunk temporal coupling is the driver — consistent with the Gibbs mechanism.
