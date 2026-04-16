@@ -217,6 +217,7 @@ Key observations:
 | 2026-04-16 (check 5) | 0 files | absent | STILL PENDING — PBS job not yet completed after 5 checks |
 | 2026-04-16 (check 6) | 0 files | absent | STILL PENDING — no r4 output after 6 status checks |
 | 2026-04-16 (check 7) | 0 files | absent | STILL PENDING — no r4 output after 7 status checks |
+| 2026-04-16 (check 8) | 0 files | absent | STILL PENDING — no r4 output after 8 status checks |
 
 ### What to look for when results arrive
 
