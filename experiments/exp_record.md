@@ -211,6 +211,7 @@ Key observations:
 | Check Time | r4 JSONs | gibbs-round4.out | PBS Status |
 |-----------|----------|-----------------|------------|
 | 2026-04-16 15:05 UTC | 0 files | absent | NOT STARTED / IN QUEUE |
+| 2026-04-16 16:02 UTC | 0 files | absent | STILL PENDING — no output yet |
 
 ### What to look for when results arrive
 
