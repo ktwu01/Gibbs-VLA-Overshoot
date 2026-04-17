@@ -230,6 +230,7 @@ Key observations:
 | 2026-04-17 (check 18) | 0 files | absent | STILL PENDING — no r4 output after 18 status checks (day 2); gibbs-round4.out absent, PBS job not yet completed |
 | 2026-04-17 (check 19) | 0 files | absent | STILL PENDING — no r4 output after 19 status checks (day 2); gibbs-round4.out absent, PBS job not yet completed |
 | 2026-04-17 (check 20) | 0 files | absent | STILL PENDING — no r4 output after 20 status checks (day 2); gibbs-round4.out absent, PBS job not yet completed |
+| 2026-04-17 (check 21) | 0 files | absent | STILL PENDING — no r4 output after 21 status checks (>24h pending); gibbs-round4.out absent; manual intervention recommended (run `qstat`, check Casper node availability, or resubmit `run_round4.pbs`) |
 
 ### What to look for when results arrive
 
