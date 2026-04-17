@@ -242,6 +242,7 @@ Key observations:
 | 2026-04-17 (check 30) | 0 files | absent | STILL PENDING — no r4 output after 30 status checks (>24h pending); gibbs-round4.out absent; PBS job confirmed stalled. Urgent: manual resubmit on Casper required or consider running SmolVLA-bridge as backup. |
 | 2026-04-17 (check 31) | 0 files | absent | STILL PENDING — no r4 output after 31 status checks (>24h pending); PBS job stalled >48h total; manual resubmit of `run_round4.pbs` on Casper is critical. Alternative: run SmolVLA-bridge locally (CPU) as unblocking step. |
 | 2026-04-17 (check 32) | 0 files | absent | STILL PENDING — no r4 output after 32 status checks (>48h stalled); PBS job confirmed dead. Immediate action required: (1) SSH to Casper, run `qstat -u $USER` to confirm job state, (2) resubmit `run_round4.pbs` with `qsub run_round4.pbs`, (3) if GPU queue unavailable, pivot to SmolVLA-bridge (`lerobot/smolvla_base` + Bridge V2 checkpoint) as CPU-feasible backup for first Gibbs result. |
+| 2026-04-17 (check 33) | 0 files | absent | STILL PENDING — no r4 output after 33 status checks (>48h stalled); PBS job confirmed dead; no new r3/r4 JSON files. Manual resubmit on Casper or pivot to SmolVLA-bridge required to unblock. |
 
 ### What to look for when results arrive
 
