@@ -236,6 +236,7 @@ Key observations:
 | 2026-04-17 (check 24) | 0 files | absent | STILL PENDING — no r4 output after 24 status checks (>24h pending); gibbs-round4.out absent; PBS job confirmed stalled — immediate manual resubmit of `run_round4.pbs` on Casper required |
 | 2026-04-17 (check 25) | 0 files | absent | STILL PENDING — no r4 output after 25 status checks (>24h pending); gibbs-round4.out absent; PBS job stalled — manual resubmit of `run_round4.pbs` on Casper required |
 | 2026-04-17 (check 26) | 0 files | absent | STILL PENDING — no r4 output after 26 status checks (>24h pending); gibbs-round4.out absent; PBS job stalled — manual resubmit of `run_round4.pbs` on Casper is urgently required |
+| 2026-04-17 (check 27) | 0 files | absent | STILL PENDING — no r4 output after 27 status checks (>24h pending); gibbs-round4.out absent; PBS job stalled — manual resubmit of `run_round4.pbs` on Casper is urgently required |
 
 ### What to look for when results arrive
 
