@@ -239,6 +239,7 @@ Key observations:
 | 2026-04-17 (check 27) | 0 files | absent | STILL PENDING — no r4 output after 27 status checks (>24h pending); gibbs-round4.out absent; PBS job stalled — manual resubmit of `run_round4.pbs` on Casper is urgently required |
 | 2026-04-17 (check 28) | 0 files | absent | STILL PENDING — no r4 output after 28 status checks (>24h pending); gibbs-round4.out absent; PBS job stalled — manual resubmit of `run_round4.pbs` on Casper is urgently required. Consider alternative: run locally with CPU or try SmolVLA-bridge as backup model. |
 | 2026-04-17 (check 29) | 0 files | absent | STILL PENDING — no r4 output after 29 status checks (>24h pending); gibbs-round4.out absent; PBS job stalled — manual resubmit of `run_round4.pbs` on Casper urgently required. No r3 or r4 new files detected. |
+| 2026-04-17 (check 30) | 0 files | absent | STILL PENDING — no r4 output after 30 status checks (>24h pending); gibbs-round4.out absent; PBS job confirmed stalled. Urgent: manual resubmit on Casper required or consider running SmolVLA-bridge as backup. |
 
 ### What to look for when results arrive
 
