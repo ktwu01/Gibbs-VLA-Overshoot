@@ -221,6 +221,7 @@ Key observations:
 | 2026-04-16 (check 9) | 0 files | absent | STILL PENDING — no r4 output after 9 status checks |
 | 2026-04-17 (check 10) | 0 files | absent | STILL PENDING — no r4 output after 10 status checks (day 2) |
 | 2026-04-17 (check 11) | 0 files | absent | STILL PENDING — no r4 output after 11 status checks (day 2); gibbs-round4.out absent, PBS job not yet completed |
+| 2026-04-17 (check 12) | 0 files | absent | STILL PENDING — no r4 output after 12 status checks (day 2); gibbs-round4.out absent, PBS job not yet completed |
 
 ### What to look for when results arrive
 
