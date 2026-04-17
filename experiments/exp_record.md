@@ -231,6 +231,7 @@ Key observations:
 | 2026-04-17 (check 19) | 0 files | absent | STILL PENDING — no r4 output after 19 status checks (day 2); gibbs-round4.out absent, PBS job not yet completed |
 | 2026-04-17 (check 20) | 0 files | absent | STILL PENDING — no r4 output after 20 status checks (day 2); gibbs-round4.out absent, PBS job not yet completed |
 | 2026-04-17 (check 21) | 0 files | absent | STILL PENDING — no r4 output after 21 status checks (>24h pending); gibbs-round4.out absent; manual intervention recommended (run `qstat`, check Casper node availability, or resubmit `run_round4.pbs`) |
+| 2026-04-17 (check 22) | 0 files | absent | STILL PENDING — no r4 output after 22 status checks (>24h pending); PBS job likely stalled or failed silently; manual `qstat` / resubmit strongly recommended |
 
 ### What to look for when results arrive
 
@@ -240,6 +241,3 @@ Key observations:
 - **ZERO:** ~0% overshoot (model is also memoryless / chunking not sufficient)
 
 Key diagnostic: if `r4_pi0bridge_c1` (n_action_steps=1) shows ~0% and `r4_pi0bridge_c4` shows >0%, that is strong evidence the chunk temporal coupling is the driver — consistent with the Gibbs mechanism.
-
-| 2026-04-17 (check 18) | 0 files | absent | STILL PENDING — no r4 output after 18 status checks (day 2); gibbs-round4.out absent, PBS job not yet completed |
-| 2026-04-17 (check 19) | 0 files | absent | STILL PENDING — no r4 output after 19 status checks (day 2); PBS job not yet completed; recommend manual qstat check |
