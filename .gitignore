@@ -43,3 +43,9 @@ experiments/outputs/*.png
 
 # Temporary files
 tmp/
+
+# PBS job logs (kept locally, not in repo — they bloat history)
+gibbs-*.out
+gibbs-*.err
+gibbs-*.o[0-9]*
+gibbs-*.e[0-9]*

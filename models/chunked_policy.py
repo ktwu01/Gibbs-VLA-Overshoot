@@ -72,15 +72,20 @@ class ChunkedVLAPolicy:
         self.n_action_steps = n_action_steps
         self._model_id = model_id
 
+        # If model_id is an HF repo with a config schema mismatch (e.g. INTACT
+        # pi0 saved with an older lerobot), download a snapshot and strip the
+        # unknown fields. If model_id is already a local path, use it directly.
+        load_path = self._resolve_load_path(model_id)
+
         # Detect model type and load
         if "smolvla" in model_id.lower():
             self._model_type = "smolvla"
             from lerobot.policies.smolvla.modeling_smolvla import SmolVLAPolicy
-            self.policy = SmolVLAPolicy.from_pretrained(model_id)
+            self.policy = SmolVLAPolicy.from_pretrained(load_path)
         elif "pi0" in model_id.lower():
             self._model_type = "pi0"
             from lerobot.policies.pi0.modeling_pi0 import PI0Policy
-            self.policy = PI0Policy.from_pretrained(model_id)
+            self.policy = PI0Policy.from_pretrained(load_path)
         else:
             raise ValueError(f"Unknown model type in '{model_id}'.")
 
@@ -97,6 +102,61 @@ class ChunkedVLAPolicy:
 
         # Load tokenizer
         self._init_tokenizer()
+
+    @staticmethod
+    def _resolve_load_path(model_id: str) -> str:
+        """
+        If `model_id` is a local directory, return it as-is. Otherwise
+        snapshot-download from HF and strip config.json fields that
+        lerobot 0.5.2 doesn't recognize (older checkpoint formats).
+
+        This is needed for INTACT-pi0-finetune-bridge and similar
+        community checkpoints saved with older lerobot versions.
+        """
+        import os, json
+        from pathlib import Path
+
+        if os.path.isdir(model_id):
+            return model_id
+
+        # Cache dir per model
+        safe_name = model_id.replace('/', '__')
+        cache_root = Path(os.environ.get(
+            'GIBBS_MODEL_CACHE',
+            os.path.expanduser('~/.cache/gibbs_models')
+        ))
+        local = cache_root / safe_name
+
+        if (local / 'config.json').exists():
+            return str(local)
+
+        from huggingface_hub import snapshot_download
+        local.parent.mkdir(parents=True, exist_ok=True)
+        snapshot_download(
+            model_id,
+            local_dir=str(local),
+            local_dir_use_symlinks=False,
+        )
+
+        # Strip unknown PI0Config fields. These are training-only or older
+        # API names that don't affect inference behavior we care about.
+        UNKNOWN_PI0_FIELDS = {
+            'resize_imgs_with_padding', 'adapt_to_pi_aloha',
+            'use_delta_joint_actions_aloha', 'proj_width', 'num_steps',
+            'use_cache', 'attention_implementation', 'train_state_proj',
+            'paligemma_pretrained_path',
+        }
+        cfg_path = local / 'config.json'
+        if cfg_path.exists():
+            cfg = json.load(open(cfg_path))
+            removed = [k for k in UNKNOWN_PI0_FIELDS if k in cfg]
+            if removed:
+                for k in removed:
+                    cfg.pop(k, None)
+                json.dump(cfg, open(cfg_path, 'w'), indent=2)
+                print(f'  Stripped {len(removed)} unknown config fields: {removed}')
+
+        return str(local)
 
     def _init_tokenizer(self):
         """Initialize the text tokenizer for instruction encoding."""
