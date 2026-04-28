@@ -178,6 +178,15 @@ class ChunkedVLAPolicy:
 
     @property
     def action_dim(self) -> int:
+        # Read the *real* output action dim, not the padded internal one.
+        # pi0 / SmolVLA pad actions internally to max_action_dim (e.g. 32)
+        # but predict_action_chunk unpads to output_features['action'].shape[0]
+        # before returning. The runner needs the post-unpad shape.
+        out_feats = getattr(self.policy.config, 'output_features', None) or {}
+        action_feat = out_feats.get('action')
+        if action_feat is not None and getattr(action_feat, 'shape', None):
+            return int(action_feat.shape[0])
+        # Fallback for models that don't expose output_features
         return getattr(self.policy.config, 'action_dim',
                        getattr(self.policy.config, 'max_action_dim', 7))
 
