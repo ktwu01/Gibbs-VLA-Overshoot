@@ -34,7 +34,11 @@ echo ""
 # - Model trained ON Bridge V2 data → in-distribution!
 # ============================================================
 
-MODEL="juexzz/INTACT-pi0-finetune-bridge"
+# Use pre-staged clean snapshot to avoid HF rate-limited re-download.
+# Path detection: chunked_policy.ChunkedVLAPolicy treats this as a local
+# dir (skips snapshot_download) and triggers pi0 branch (path contains "pi0").
+MODEL="/glade/work/wukoutian/.cache/intact_pi0_clean"
+export GIBBS_MODEL_CACHE=/glade/work/$USER/.cache/gibbs_models
 
 # Sweep n_action_steps: 4 (full chunk), 2, 1 (re-plan every step)
 for NAS in 4 2 1; do
