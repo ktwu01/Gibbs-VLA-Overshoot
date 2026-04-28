@@ -1,0 +1,28 @@
+{
+  "model": "/glade/work/wukoutian/.cache/intact_pi0_clean",
+  "n_action_steps": 4,
+  "chunk_size": 4,
+  "instruction_a": "pick up the sushi",
+  "instruction_b": "close the drawer",
+  "total_steps": 100,
+  "switch_step": 50,
+  "fs_hz": 5.0,
+  "per_axis_overshoot_percent": {
+    "dx": 12096.47403788763,
+    "dy": 788.6822035160266,
+    "dz": 1417.800481149319,
+    "droll": 1070.875718150543,
+    "dpitch": 2292.1248229727084,
+    "dyaw": 2416.8285644874336,
+    "grip": 15192.847672624024
+  },
+  "analysis_axis": 0,
+  "overshoot_ratio": 120.9647403788763,
+  "overshoot_percent": 12096.47403788763,
+  "peak_velocity": 0.08131008595228195,
+  "peak_acceleration": 0.3983677364885807,
+  "power_law_exponent": 0.1512324353776382,
+  "high_band_ratio": 0.9182031932754233,
+  "velocity_mean": 0.030932432133704425,
+  "velocity_p95": 0.07153807440772653
+}

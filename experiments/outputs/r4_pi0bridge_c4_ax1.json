@@ -1,0 +1,28 @@
+{
+  "model": "/glade/work/wukoutian/.cache/intact_pi0_clean",
+  "n_action_steps": 4,
+  "chunk_size": 4,
+  "instruction_a": "pick up the red block",
+  "instruction_b": "push the blue block to the left",
+  "total_steps": 100,
+  "switch_step": 50,
+  "fs_hz": 5.0,
+  "per_axis_overshoot_percent": {
+    "dx": 1495.0158333503098,
+    "dy": 861.0284021133706,
+    "dz": 256.5086575965218,
+    "droll": 477.4211118474633,
+    "dpitch": 817.2238241249929,
+    "dyaw": 1879.4268700183982,
+    "grip": 651.6179398651392
+  },
+  "analysis_axis": 1,
+  "overshoot_ratio": 8.610284021133706,
+  "overshoot_percent": 861.0284021133706,
+  "peak_velocity": 0.05241130478680134,
+  "peak_acceleration": 0.2464884426444769,
+  "power_law_exponent": -0.16241901021781333,
+  "high_band_ratio": 0.9253083074108389,
+  "velocity_mean": 0.026336454879492523,
+  "velocity_p95": 0.041810669004917145
+}

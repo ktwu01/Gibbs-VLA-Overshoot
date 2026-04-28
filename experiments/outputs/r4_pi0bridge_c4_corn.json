@@ -1,0 +1,28 @@
+{
+  "model": "/glade/work/wukoutian/.cache/intact_pi0_clean",
+  "n_action_steps": 4,
+  "chunk_size": 4,
+  "instruction_a": "put the corn in the pot",
+  "instruction_b": "move the cloth to the right",
+  "total_steps": 100,
+  "switch_step": 50,
+  "fs_hz": 5.0,
+  "per_axis_overshoot_percent": {
+    "dx": 3533.114830658892,
+    "dy": 2397.5285326038334,
+    "dz": 442.08425234359163,
+    "droll": 980.9322946653996,
+    "dpitch": 8754.230502132263,
+    "dyaw": 1124.7955185793382,
+    "grip": 1024.325206505323
+  },
+  "analysis_axis": 0,
+  "overshoot_ratio": 35.33114830658892,
+  "overshoot_percent": 3533.114830658892,
+  "peak_velocity": 0.05490612704306841,
+  "peak_acceleration": 0.26039425283670425,
+  "power_law_exponent": 0.3879419827365657,
+  "high_band_ratio": 0.933538174847802,
+  "velocity_mean": 0.024733366398140787,
+  "velocity_p95": 0.04708927869796753
+}

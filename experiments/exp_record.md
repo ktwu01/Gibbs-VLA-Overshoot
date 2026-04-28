@@ -260,5 +260,60 @@ Two viable approaches identified:
    chunk_size=4). Uses 4 cameras instead of 1 — different observation key
    plumbing, but ungated and Bridge V2-trained.
 
-Strategy 1 is cleaner and preserves the original Round 4 intent. See
-`run_round4.pbs` and `models/chunked_policy.py` for the implementation.
+Strategy 1 was used. See `run_round4.pbs` and `models/chunked_policy.py`.
+
+---
+
+## Round 4 retry: COMPLETED (2026-04-28)
+
+After 4 PBS submissions chasing distinct bugs (config schema → HF
+rate-limit → action shape → success), 8 of 8 experiments completed.
+
+### Results
+
+| ID | Instruction A → B | Axis | Chunk | Overshoot |
+|----|---|------|-------|-----------|
+| `r4_pi0bridge_c4` | red → blue | dx | 4 | 148.4% |
+| `r4_pi0bridge_c2` | red → blue | dx | 2 | 609.3% |
+| `r4_pi0bridge_c1` | red → blue | dx | 1 | 4291.7% |
+| `r4_pi0bridge_c4_ax1` | red → blue | dy | 4 | 861.0% |
+| `r4_pi0bridge_c4_ax2` | red → blue | dz | 4 | 2337.8% |
+| `r4_pi0bridge_c4_ax6` | red → blue | grip | 4 | 1870.2% |
+| `r4_pi0bridge_c4_corn` | corn → cloth | dx | 4 | 3533.1% |
+| `r4_pi0bridge_c4_sushi` | sushi → drawer | dx | 4 | 12096.5% |
+
+### Key findings (negative result)
+
+1. **Chunk-as-truncation hypothesis falsified.** Overshoot scales *opposite*
+   to the Gibbs prediction: the c=4 → c=2 → c=1 sweep gives 148% → 609% →
+   4292%. Smaller chunks produce *more* overshoot, not less.
+
+2. **Run-to-run variance dominates the signal.** Four separate runs of the
+   same default-instruction c=4 experiment (only `--axis` differs across
+   processes) gave 148%, 861%, 2338%, 1870%. The model and inputs are
+   bit-identical between runs — the differences are entirely from fresh
+   flow-matching Gaussian noise on each `predict_action_chunk` call.
+
+3. **Likely real mechanism:** pi0 uses flow-matching, which starts from
+   random noise on each forward pass. With c=1, the model re-samples noise
+   every step → high inter-step variance → spectral analysis flags as
+   "overshoot". With c=4, the same noise sample drives all 4 actions
+   through one denoising trajectory → smoother. The metric is measuring
+   *re-planning noise floor*, not Gibbs ringing.
+
+### What the paper needs next
+
+Goal Pillar 1 (real VLA showing ~9% Gibbs) is **not** achieved in this
+configuration. Two viable paths to revisit:
+
+1. **Fix the flow-matching noise seed** across `predict_action_chunk`
+   calls. One-line patch to LeRobot's `sample_actions`. If overshoot then
+   *decreases* monotonically with chunk size, the chunk-truncation
+   hypothesis is back on the table.
+
+2. **Switch to a deterministic chunked model** — ACT or VQ-BeT — where
+   the same `(image, instruction)` input always produces the same chunk.
+   That isolates temporal coupling from sampling noise.
+
+Without one of these, the overshoot we measure is a property of stochastic
+denoising, not of action chunking, and is unsuitable for the Gibbs claim.
