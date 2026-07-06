@@ -1,0 +1,439 @@
+=== START Wed Apr 15 05:19:27 PM MDT 2026 ===
+=== Environment ===
+casper43
+PATH: /glade/u/home/wukoutian/.nvm/versions/node/v24.11.1/bin:/glade/u/apps/opt/conda/bin:/glade/u/home/wukoutian/.local/bin:/glade/u/apps/casper/25.10/spack/opt/spack/netcdf/4.9.3/intel-oneapi-compilers/2025.2.1/z4hi/bin:/glade/u/apps/casper/25.10/spack/opt/spack/hdf5/1.14.6/intel-oneapi-compilers/2025.2.1/g4sz/bin:/glade/u/apps/casper/25.10/spack/opt/spack/ncarcompilers/1.1.0/intel-oneapi-compilers/2025.2.1/soed/bin/mpi:/glade/u/apps/casper/25.10/spack/opt/spack/openmpi/5.0.8/intel-oneapi-compilers/2025.2.1/4rta/bin:/glade/u/apps/casper/25.10/spack/opt/spack/ucx/1.19.0/gcc/12.5.0/tmnm/bin:/glade/u/apps/common/25.10/spack/opt/spack/cuda/12.9.0/b74h/bin:/glade/u/apps/casper/25.10/spack/opt/spack/ncarcompilers/1.1.0/intel-oneapi-compilers/2025.2.1/soed/bin:/glade/u/apps/common/25.10/spack/opt/spack/intel-oneapi-compilers/2025.2.1/s4f2/compiler/2025.2/bin:/glade/u/apps/common/25.10/spack/opt/spack/gcc/12.5.0/hsbg/bin:/glade/u/apps/casper/25.10/opt/wrappers/bin:/glade/u/apps/casper/25.10/opt/utils/bin:/glade/u/home/wukoutian/.local/bin:/usr/lib/mit/bin:/usr/lib/mit/sbin:/opt/pbs/bin:/glade/u/apps/casper/25.10/opt/view/bin:/usr/local/bin:/usr/bin:/sbin:/bin
+Python: /glade/work/wukoutian/conda-envs/gibbs312/bin/python Python 3.12.13
+=== GPU Info ===
+Wed Apr 15 17:19:28 2026       
++-----------------------------------------------------------------------------------------+
+| NVIDIA-SMI 565.57.01              Driver Version: 565.57.01      CUDA Version: 12.7     |
+|-----------------------------------------+------------------------+----------------------+
+| GPU  Name                 Persistence-M | Bus-Id          Disp.A | Volatile Uncorr. ECC |
+| Fan  Temp   Perf          Pwr:Usage/Cap |           Memory-Usage | GPU-Util  Compute M. |
+|                                         |                        |               MIG M. |
+|=========================================+========================+======================|
+|   0  NVIDIA A100-SXM4-80GB          On  |   00000000:C1:00.0 Off |                    0 |
+| N/A   28C    P0             59W /  500W |       5MiB /  81920MiB |      0%      Default |
+|                                         |                        |             Disabled |
++-----------------------------------------+------------------------+----------------------+
+                                                                                         
++-----------------------------------------------------------------------------------------+
+| Processes:                                                                              |
+|  GPU   GI   CI        PID   Type   Process name                              GPU Memory |
+|        ID   ID                                                               Usage      |
+|=========================================================================================|
+|  No running processes found                                                             |
++-----------------------------------------------------------------------------------------+
+
+========== r3_exp07: pi0 chunk=50 ==========
+/glade/work/wukoutian/conda-envs/gibbs312/lib/python3.12/site-packages/lerobot/policies/vqbet/vqbet_utils.py:1373: FutureWarning: `torch.cuda.amp.autocast(args...)` is deprecated. Please use `torch.amp.autocast('cuda', args...)` instead.
+  @autocast(enabled=False)
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+WARNING:huggingface_hub.utils._http:Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+WARNING:root:Vision embedding key might need handling: paligemma_with_expert.paligemma.model.vision_tower.vision_model.embeddings.patch_embedding.bias
+WARNING:root:Vision embedding key might need handling: paligemma_with_expert.paligemma.model.vision_tower.vision_model.embeddings.patch_embedding.weight
+Loading Bridge V2 observation (episode=0)...
+WARNING: Using synthetic Bridge V2 observation (real data unavailable)
+  Image shape: (256, 256, 3)
+  Original instruction: pick up the red block
+  Instruction A: pick up the red block
+  Instruction B: push the blue block to the left
+Loading lerobot/pi0_base (n_action_steps=50)...
+The PI0 model is a direct port of the OpenPI implementation. 
+This implementation follows the original OpenPI structure for compatibility. 
+Original implementation: https://github.com/Physical-Intelligence/openpi
+Loading model from: lerobot/pi0_base
+✓ Loaded state dict from model.safetensors
+Remapped 777 state dict keys
+All keys loaded successfully!
+  Model loaded in 101.4s
+  Chunk size: 50
+  Action dim: 32
+Running 100-step rollout (switch at step 50)...
+  Inference done in 2.4s
+Figure saved: experiments/outputs/r3_exp07_pi0_c50.png
+{
+  "model": "lerobot/pi0_base",
+  "n_action_steps": 50,
+  "chunk_size": 50,
+  "instruction_a": "pick up the red block",
+  "instruction_b": "push the blue block to the left",
+  "total_steps": 100,
+  "switch_step": 50,
+  "fs_hz": 5.0,
+  "per_axis_overshoot_percent": {
+    "dx": 1027.4598900190676,
+    "dy": 2676.065883631405,
+    "dz": 265.58952062145954,
+    "droll": 1848.1694855061987,
+    "dpitch": 309.58710952279023,
+    "dyaw": 1937.8057899108248,
+    "grip": 1086.7385931356716,
+    "dim7": 7407.296456829931,
+    "dim8": 4304.033780967001,
+    "dim9": 7649.074344439085,
+    "dim10": 1231.271464710621,
+    "dim11": 327.31582343973605,
+    "dim12": 41057.57222848278,
+    "dim13": 41610.33668511006,
+    "dim14": 3073.712398062241,
+    "dim15": 675.0373295920151,
+    "dim16": 595.5457601287089,
+    "dim17": 283.3781737101392,
+    "dim18": 320.539454971369,
+    "dim19": 273.23138881532884,
+    "dim20": 778.1033802463917,
+    "dim21": 2821.7537230581365,
+    "dim22": 1777.9197540514456,
+    "dim23": 401.73564053244934,
+    "dim24": 584.1387465453397,
+    "dim25": 398.28207433844807,
+    "dim26": 744.9396322615236,
+    "dim27": 2445.203238522503,
+    "dim28": 3750.041007996161,
+    "dim29": 2628.100045959609,
+    "dim30": 1739.9836923410608,
+    "dim31": 5160.398678460987
+  },
+  "analysis_axis": 0,
+  "overshoot_ratio": 10.274598900190677,
+  "overshoot_percent": 1027.4598900190676,
+  "peak_velocity": 1.0305428504943848,
+  "peak_acceleration": 3.591986745595932,
+  "power_law_exponent": -0.07247357062271405,
+  "high_band_ratio": 0.5061092543722,
+  "velocity_mean": 0.2739281510934234,
+  "velocity_p95": 0.7271769428625702
+}
+EXIT CODE: 0
+
+=== FIRST EXPERIMENT SUCCEEDED! Running sweep ===
+========== pi0 chunk=25 ==========
+/glade/work/wukoutian/conda-envs/gibbs312/lib/python3.12/site-packages/lerobot/policies/vqbet/vqbet_utils.py:1373: FutureWarning: `torch.cuda.amp.autocast(args...)` is deprecated. Please use `torch.amp.autocast('cuda', args...)` instead.
+  @autocast(enabled=False)
+WARNING:root:Vision embedding key might need handling: paligemma_with_expert.paligemma.model.vision_tower.vision_model.embeddings.patch_embedding.bias
+WARNING:root:Vision embedding key might need handling: paligemma_with_expert.paligemma.model.vision_tower.vision_model.embeddings.patch_embedding.weight
+Loading Bridge V2 observation (episode=0)...
+WARNING: Using synthetic Bridge V2 observation (real data unavailable)
+  Image shape: (256, 256, 3)
+  Original instruction: pick up the red block
+  Instruction A: pick up the red block
+  Instruction B: push the blue block to the left
+Loading lerobot/pi0_base (n_action_steps=25)...
+The PI0 model is a direct port of the OpenPI implementation. 
+This implementation follows the original OpenPI structure for compatibility. 
+Original implementation: https://github.com/Physical-Intelligence/openpi
+Loading model from: lerobot/pi0_base
+✓ Loaded state dict from model.safetensors
+Remapped 777 state dict keys
+All keys loaded successfully!
+  Model loaded in 101.8s
+  Chunk size: 50
+  Action dim: 32
+Running 100-step rollout (switch at step 50)...
+  Inference done in 1.2s
+Figure saved: experiments/outputs/r3_exp_pi0_c25.png
+{
+  "model": "lerobot/pi0_base",
+  "n_action_steps": 25,
+  "chunk_size": 50,
+  "instruction_a": "pick up the red block",
+  "instruction_b": "push the blue block to the left",
+  "total_steps": 100,
+  "switch_step": 50,
+  "fs_hz": 5.0,
+  "per_axis_overshoot_percent": {
+    "dx": 923.8737786990143,
+    "dy": 718.1601378283648,
+    "dz": 180.8800026551982,
+    "droll": 474.9876707412805,
+    "dpitch": 312.67657328737283,
+    "dyaw": 598.8086074885612,
+    "grip": 531.470241224357,
+    "dim7": 2046.7054740909227,
+    "dim8": 1411.9042793698522,
+    "dim9": 913.9408296832316,
+    "dim10": 372.74055810226076,
+    "dim11": 1467.867962036237,
+    "dim12": 641.7842909329447,
+    "dim13": 2309.5057555918174,
+    "dim14": 469.94221752432253,
+    "dim15": 422.8077180032111,
+    "dim16": 1004.8519191178812,
+    "dim17": 2253.4763205815943,
+    "dim18": 263.61751929060716,
+    "dim19": 4719.9465050556555,
+    "dim20": 3542.3792248885015,
+    "dim21": 1099.4918634986939,
+    "dim22": 773.8731330431465,
+    "dim23": 393.76889944870624,
+    "dim24": 712.6732924048316,
+    "dim25": 3875.81318027862,
+    "dim26": 388.213245787599,
+    "dim27": 963.1207829558713,
+    "dim28": 11919.995159008991,
+    "dim29": 353.84395418057596,
+    "dim30": 780.6221069962431,
+    "dim31": 535.7011042135479
+  },
+  "analysis_axis": 0,
+  "overshoot_ratio": 9.238737786990143,
+  "overshoot_percent": 923.8737786990143,
+  "peak_velocity": 1.1595117300748825,
+  "peak_acceleration": 3.85564339812845,
+  "power_law_exponent": -0.22852492954643228,
+  "high_band_ratio": 0.5578386210001333,
+  "velocity_mean": 0.27303645182400943,
+  "velocity_p95": 0.7937310636043547
+}
+
+========== pi0 chunk=10 ==========
+/glade/work/wukoutian/conda-envs/gibbs312/lib/python3.12/site-packages/lerobot/policies/vqbet/vqbet_utils.py:1373: FutureWarning: `torch.cuda.amp.autocast(args...)` is deprecated. Please use `torch.amp.autocast('cuda', args...)` instead.
+  @autocast(enabled=False)
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+WARNING:huggingface_hub.utils._http:Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+WARNING:root:Vision embedding key might need handling: paligemma_with_expert.paligemma.model.vision_tower.vision_model.embeddings.patch_embedding.bias
+WARNING:root:Vision embedding key might need handling: paligemma_with_expert.paligemma.model.vision_tower.vision_model.embeddings.patch_embedding.weight
+Loading Bridge V2 observation (episode=0)...
+WARNING: Using synthetic Bridge V2 observation (real data unavailable)
+  Image shape: (256, 256, 3)
+  Original instruction: pick up the red block
+  Instruction A: pick up the red block
+  Instruction B: push the blue block to the left
+Loading lerobot/pi0_base (n_action_steps=10)...
+The PI0 model is a direct port of the OpenPI implementation. 
+This implementation follows the original OpenPI structure for compatibility. 
+Original implementation: https://github.com/Physical-Intelligence/openpi
+Loading model from: lerobot/pi0_base
+✓ Loaded state dict from model.safetensors
+Remapped 777 state dict keys
+All keys loaded successfully!
+  Model loaded in 101.7s
+  Chunk size: 50
+  Action dim: 32
+Running 100-step rollout (switch at step 50)...
+  Inference done in 1.2s
+Figure saved: experiments/outputs/r3_exp_pi0_c10.png
+{
+  "model": "lerobot/pi0_base",
+  "n_action_steps": 10,
+  "chunk_size": 50,
+  "instruction_a": "pick up the red block",
+  "instruction_b": "push the blue block to the left",
+  "total_steps": 100,
+  "switch_step": 50,
+  "fs_hz": 5.0,
+  "per_axis_overshoot_percent": {
+    "dx": 1367.8373064729958,
+    "dy": 317.7231675681276,
+    "dz": 596.831631033471,
+    "droll": 1640.8735279109565,
+    "dpitch": 427.3338737406819,
+    "dyaw": 490.2978320019227,
+    "grip": 1520.9385630161921,
+    "dim7": 1245.573537765276,
+    "dim8": 1402.153208608498,
+    "dim9": 862.0282873318909,
+    "dim10": 457.7939313673781,
+    "dim11": 963.6315367571832,
+    "dim12": 413.6395265690289,
+    "dim13": 1397.2251845297499,
+    "dim14": 5323.905142784678,
+    "dim15": 975.373363353415,
+    "dim16": 167.87969951794284,
+    "dim17": 1680.956166977939,
+    "dim18": 264.2156059026156,
+    "dim19": 1099.924448594285,
+    "dim20": 1187.19558298343,
+    "dim21": 2152.600430754044,
+    "dim22": 1406.3777210662263,
+    "dim23": 1081.6932756114677,
+    "dim24": 736.1307416250755,
+    "dim25": 227.543356589363,
+    "dim26": 953.1918458473766,
+    "dim27": 3197.9847686278235,
+    "dim28": 10304.52185767677,
+    "dim29": 599.2740485827485,
+    "dim30": 1680.8657746312547,
+    "dim31": 1073.9643637350778
+  },
+  "analysis_axis": 0,
+  "overshoot_ratio": 13.678373064729957,
+  "overshoot_percent": 1367.8373064729958,
+  "peak_velocity": 0.9672664105892181,
+  "peak_acceleration": 3.7607011385262012,
+  "power_law_exponent": -0.045760146972571504,
+  "high_band_ratio": 0.7045758219970225,
+  "velocity_mean": 0.29661672506481407,
+  "velocity_p95": 0.7024343246594071
+}
+
+========== pi0 chunk=1 ==========
+/glade/work/wukoutian/conda-envs/gibbs312/lib/python3.12/site-packages/lerobot/policies/vqbet/vqbet_utils.py:1373: FutureWarning: `torch.cuda.amp.autocast(args...)` is deprecated. Please use `torch.amp.autocast('cuda', args...)` instead.
+  @autocast(enabled=False)
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+WARNING:huggingface_hub.utils._http:Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+WARNING:root:Vision embedding key might need handling: paligemma_with_expert.paligemma.model.vision_tower.vision_model.embeddings.patch_embedding.bias
+WARNING:root:Vision embedding key might need handling: paligemma_with_expert.paligemma.model.vision_tower.vision_model.embeddings.patch_embedding.weight
+Loading Bridge V2 observation (episode=0)...
+WARNING: Using synthetic Bridge V2 observation (real data unavailable)
+  Image shape: (256, 256, 3)
+  Original instruction: pick up the red block
+  Instruction A: pick up the red block
+  Instruction B: push the blue block to the left
+Loading lerobot/pi0_base (n_action_steps=1)...
+The PI0 model is a direct port of the OpenPI implementation. 
+This implementation follows the original OpenPI structure for compatibility. 
+Original implementation: https://github.com/Physical-Intelligence/openpi
+Loading model from: lerobot/pi0_base
+✓ Loaded state dict from model.safetensors
+Remapped 777 state dict keys
+All keys loaded successfully!
+  Model loaded in 100.3s
+  Chunk size: 50
+  Action dim: 32
+Running 100-step rollout (switch at step 50)...
+  Inference done in 1.2s
+Figure saved: experiments/outputs/r3_exp_pi0_c1.png
+{
+  "model": "lerobot/pi0_base",
+  "n_action_steps": 1,
+  "chunk_size": 50,
+  "instruction_a": "pick up the red block",
+  "instruction_b": "push the blue block to the left",
+  "total_steps": 100,
+  "switch_step": 50,
+  "fs_hz": 5.0,
+  "per_axis_overshoot_percent": {
+    "dx": 1048.0619105825035,
+    "dy": 10281.60267495042,
+    "dz": 437.32717084993357,
+    "droll": 1339.35622509039,
+    "dpitch": 1142.0794235459625,
+    "dyaw": 4231.072696642167,
+    "grip": 291.3569976794915,
+    "dim7": 1582.6405870234669,
+    "dim8": 1519.8586019933407,
+    "dim9": 1117.9019830961875,
+    "dim10": 523.0827756625384,
+    "dim11": 377.6010974499741,
+    "dim12": 1683.6728948998139,
+    "dim13": 1082.0974960545311,
+    "dim14": 777.0425581938657,
+    "dim15": 21838.646720271812,
+    "dim16": 307.184662971054,
+    "dim17": 2535.3667395559337,
+    "dim18": 369.31890943449514,
+    "dim19": 5023.219017200983,
+    "dim20": 1611.1404975697856,
+    "dim21": 212.4074070928443,
+    "dim22": 199.00664900366328,
+    "dim23": 1705.5593031743133,
+    "dim24": 759.2787277624718,
+    "dim25": 2877.4955773779975,
+    "dim26": 580.573430062555,
+    "dim27": 482.7457411255007,
+    "dim28": 4123.941847015024,
+    "dim29": 359.16027534799906,
+    "dim30": 1109.0661551686005,
+    "dim31": 2805.6590134087373
+  },
+  "analysis_axis": 0,
+  "overshoot_ratio": 10.480619105825035,
+  "overshoot_percent": 1048.0619105825035,
+  "peak_velocity": 1.3825641572475433,
+  "peak_acceleration": 4.835948906838894,
+  "power_law_exponent": -0.19297188464535944,
+  "high_band_ratio": 0.5655961839493183,
+  "velocity_mean": 0.24518600068986415,
+  "velocity_p95": 0.5789990304037927
+}
+
+========== pi0 chunk=50, sushi vs drawer ==========
+/glade/work/wukoutian/conda-envs/gibbs312/lib/python3.12/site-packages/lerobot/policies/vqbet/vqbet_utils.py:1373: FutureWarning: `torch.cuda.amp.autocast(args...)` is deprecated. Please use `torch.amp.autocast('cuda', args...)` instead.
+  @autocast(enabled=False)
+WARNING:root:Vision embedding key might need handling: paligemma_with_expert.paligemma.model.vision_tower.vision_model.embeddings.patch_embedding.bias
+WARNING:root:Vision embedding key might need handling: paligemma_with_expert.paligemma.model.vision_tower.vision_model.embeddings.patch_embedding.weight
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+WARNING:huggingface_hub.utils._http:Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+Loading Bridge V2 observation (episode=0)...
+WARNING: Using synthetic Bridge V2 observation (real data unavailable)
+  Image shape: (256, 256, 3)
+  Original instruction: pick up the red block
+  Instruction A: pick up the sushi
+  Instruction B: close the drawer
+Loading lerobot/pi0_base (n_action_steps=50)...
+The PI0 model is a direct port of the OpenPI implementation. 
+This implementation follows the original OpenPI structure for compatibility. 
+Original implementation: https://github.com/Physical-Intelligence/openpi
+Loading model from: lerobot/pi0_base
+✓ Loaded state dict from model.safetensors
+Remapped 777 state dict keys
+All keys loaded successfully!
+  Model loaded in 101.8s
+  Chunk size: 50
+  Action dim: 32
+Running 100-step rollout (switch at step 50)...
+  Inference done in 1.2s
+Figure saved: experiments/outputs/r3_exp_pi0_c50_sushi.png
+{
+  "model": "lerobot/pi0_base",
+  "n_action_steps": 50,
+  "chunk_size": 50,
+  "instruction_a": "pick up the sushi",
+  "instruction_b": "close the drawer",
+  "total_steps": 100,
+  "switch_step": 50,
+  "fs_hz": 5.0,
+  "per_axis_overshoot_percent": {
+    "dx": 527.665878159694,
+    "dy": 3845.411146629745,
+    "dz": 268.4374855947302,
+    "droll": 1350.1179268442859,
+    "dpitch": 20441.442955415554,
+    "dyaw": 1537.9228024688246,
+    "grip": 540.3630286876928,
+    "dim7": 2235.4582529130066,
+    "dim8": 349.32968792717526,
+    "dim9": 7759.672597563545,
+    "dim10": 932.747422037545,
+    "dim11": 837.5106574126445,
+    "dim12": 1261.7103662461354,
+    "dim13": 549.1031414367218,
+    "dim14": 677.6150948217145,
+    "dim15": 486.3147134396617,
+    "dim16": 387.86479960130924,
+    "dim17": 2057.159143914002,
+    "dim18": 64.43989064429364,
+    "dim19": 6662.696985045466,
+    "dim20": 482.02682035809585,
+    "dim21": 3153.622141844865,
+    "dim22": 734.9727571652897,
+    "dim23": 406.12023944428995,
+    "dim24": 701.2147481912484,
+    "dim25": 809.0023917653459,
+    "dim26": 1538.6577716864351,
+    "dim27": 563.1493287459356,
+    "dim28": 1013.5508625048258,
+    "dim29": 2648.3780353128195,
+    "dim30": 473.5226143665752,
+    "dim31": 3736.254470631885
+  },
+  "analysis_axis": 0,
+  "overshoot_ratio": 5.27665878159694,
+  "overshoot_percent": 527.665878159694,
+  "peak_velocity": 1.0613827593624592,
+  "peak_acceleration": 6.165726436302066,
+  "power_law_exponent": -0.13960789694775255,
+  "high_band_ratio": 0.649432591216284,
+  "velocity_mean": 0.2776276214979589,
+  "velocity_p95": 0.6460783248767255
+}
+
+=== ALL DONE Wed Apr 15 05:28:28 PM MDT 2026 ===
+=== SUMMARY ===
+r3_exp07_pi0_c50: ov=1027.4599%, n_as=50
+r3_exp_pi0_c10: ov=1367.8373%, n_as=10
+r3_exp_pi0_c1: ov=1048.0619%, n_as=1
+r3_exp_pi0_c25: ov=923.8738%, n_as=25
+r3_exp_pi0_c50_sushi: ov=527.6659%, n_as=50

@@ -1,0 +1,472 @@
+=== GPU Info ===
+Wed Apr 15 12:25:58 2026       
++-----------------------------------------------------------------------------------------+
+| NVIDIA-SMI 565.57.01              Driver Version: 565.57.01      CUDA Version: 12.7     |
+|-----------------------------------------+------------------------+----------------------+
+| GPU  Name                 Persistence-M | Bus-Id          Disp.A | Volatile Uncorr. ECC |
+| Fan  Temp   Perf          Pwr:Usage/Cap |           Memory-Usage | GPU-Util  Compute M. |
+|                                         |                        |               MIG M. |
+|=========================================+========================+======================|
+|   0  NVIDIA A100-SXM4-80GB          On  |   00000000:01:00.0 Off |                    0 |
+| N/A   30C    P0             60W /  500W |       5MiB /  81920MiB |      0%      Default |
+|                                         |                        |             Disabled |
++-----------------------------------------+------------------------+----------------------+
+                                                                                         
++-----------------------------------------------------------------------------------------+
+| Processes:                                                                              |
+|  GPU   GI   CI        PID   Type   Process name                              GPU Memory |
+|        ID   ID                                                               Usage      |
+|=========================================================================================|
+|  No running processes found                                                             |
++-----------------------------------------------------------------------------------------+
+
+========== r2_exp01: raw dx, default instrs ==========
+Using a slow image processor as `use_fast` is unset and a slow processor was saved with this model. `use_fast=True` will be the default behavior in v4.48, even if the model was saved with a slow processor. This will result in minor differences in outputs. You'll still be able to use a slow processor with `use_fast=False`.
+Expected `transformers==4.40.1` and `tokenizers==0.19.1` but got `transformers==4.49.0` and `tokenizers==0.21.4`; there might be inference-time regressions due to dependency changes. If in doubt, pleaseuse the above versions.
+Loading Bridge V2 observation (episode=0)...
+WARNING: Using synthetic Bridge V2 observation (real data unavailable)
+  Image shape: (256, 256, 3)
+  Original instruction: pick up the red block
+  Instruction A: pick up the red block
+  Instruction B: push the blue block to the left
+Loading OpenVLA-7B...
+Loading checkpoint shards:   0%|          | 0/3 [00:00<?, ?it/s]Loading checkpoint shards:  33%|███▎      | 1/3 [00:04<00:09,  4.54s/it]Loading checkpoint shards:  67%|██████▋   | 2/3 [00:07<00:03,  3.70s/it]Loading checkpoint shards: 100%|██████████| 3/3 [00:08<00:00,  2.25s/it]Loading checkpoint shards: 100%|██████████| 3/3 [00:08<00:00,  2.73s/it]
+  Model loaded in 99.8s
+Running 100-step rollout (switch at step 50)...
+  Inference done in 21.7s
+Figure saved: experiments/outputs/r2_exp01_dx_raw.png
+{
+  "model": "openvla/openvla-7b",
+  "dataset": "bridge_v2",
+  "episode_index": 0,
+  "original_instruction": "pick up the red block",
+  "instruction_a": "pick up the red block",
+  "instruction_b": "push the blue block to the left",
+  "total_steps": 100,
+  "switch_step": 50,
+  "fs_hz": 5.0,
+  "unnorm_key": "none",
+  "per_axis_overshoot_percent": {
+    "dx": 0.0,
+    "dy": 0.0,
+    "dz": 0.0,
+    "droll": 0.0,
+    "dpitch": 1.8625452057856252e-14,
+    "dyaw": -8.847089727481709e-14,
+    "grip": NaN
+  },
+  "analysis_axis": 0,
+  "overshoot_ratio": 0.0,
+  "overshoot_percent": 0.0,
+  "peak_velocity": 1.2352941176470587,
+  "peak_acceleration": 3.0882352941176467,
+  "power_law_exponent": 0.3664541920266297,
+  "high_band_ratio": 0.08931563886292694,
+  "velocity_mean": 0.024705882352941175,
+  "velocity_p95": 0.0
+}
+
+========== r2_exp02: raw dy ==========
+Using a slow image processor as `use_fast` is unset and a slow processor was saved with this model. `use_fast=True` will be the default behavior in v4.48, even if the model was saved with a slow processor. This will result in minor differences in outputs. You'll still be able to use a slow processor with `use_fast=False`.
+Expected `transformers==4.40.1` and `tokenizers==0.19.1` but got `transformers==4.49.0` and `tokenizers==0.21.4`; there might be inference-time regressions due to dependency changes. If in doubt, pleaseuse the above versions.
+Loading Bridge V2 observation (episode=0)...
+WARNING: Using synthetic Bridge V2 observation (real data unavailable)
+  Image shape: (256, 256, 3)
+  Original instruction: pick up the red block
+  Instruction A: pick up the red block
+  Instruction B: push the blue block to the left
+Loading OpenVLA-7B...
+Loading checkpoint shards:   0%|          | 0/3 [00:00<?, ?it/s]Loading checkpoint shards:  33%|███▎      | 1/3 [00:00<00:00,  4.91it/s]Loading checkpoint shards:  67%|██████▋   | 2/3 [00:00<00:00,  5.46it/s]Loading checkpoint shards: 100%|██████████| 3/3 [00:00<00:00,  5.87it/s]Loading checkpoint shards: 100%|██████████| 3/3 [00:00<00:00,  5.69it/s]
+  Model loaded in 13.8s
+Running 100-step rollout (switch at step 50)...
+  Inference done in 18.6s
+Figure saved: experiments/outputs/r2_exp02_dy_raw.png
+{
+  "model": "openvla/openvla-7b",
+  "dataset": "bridge_v2",
+  "episode_index": 0,
+  "original_instruction": "pick up the red block",
+  "instruction_a": "pick up the red block",
+  "instruction_b": "push the blue block to the left",
+  "total_steps": 100,
+  "switch_step": 50,
+  "fs_hz": 5.0,
+  "unnorm_key": "none",
+  "per_axis_overshoot_percent": {
+    "dx": 0.0,
+    "dy": 0.0,
+    "dz": 0.0,
+    "droll": 0.0,
+    "dpitch": 1.8625452057856252e-14,
+    "dyaw": -8.847089727481709e-14,
+    "grip": NaN
+  },
+  "analysis_axis": 1,
+  "overshoot_ratio": 0.0,
+  "overshoot_percent": 0.0,
+  "peak_velocity": 1.1372549019607843,
+  "peak_acceleration": 2.8431372549019605,
+  "power_law_exponent": 0.3818967858340751,
+  "high_band_ratio": 0.08931563886292694,
+  "velocity_mean": 0.022745098039215685,
+  "velocity_p95": 0.0
+}
+
+========== r2_exp03: raw dz ==========
+Using a slow image processor as `use_fast` is unset and a slow processor was saved with this model. `use_fast=True` will be the default behavior in v4.48, even if the model was saved with a slow processor. This will result in minor differences in outputs. You'll still be able to use a slow processor with `use_fast=False`.
+Expected `transformers==4.40.1` and `tokenizers==0.19.1` but got `transformers==4.49.0` and `tokenizers==0.21.4`; there might be inference-time regressions due to dependency changes. If in doubt, pleaseuse the above versions.
+Loading Bridge V2 observation (episode=0)...
+WARNING: Using synthetic Bridge V2 observation (real data unavailable)
+  Image shape: (256, 256, 3)
+  Original instruction: pick up the red block
+  Instruction A: pick up the red block
+  Instruction B: push the blue block to the left
+Loading OpenVLA-7B...
+Loading checkpoint shards:   0%|          | 0/3 [00:00<?, ?it/s]Loading checkpoint shards:  33%|███▎      | 1/3 [00:00<00:00,  4.86it/s]Loading checkpoint shards:  67%|██████▋   | 2/3 [00:00<00:00,  5.47it/s]Loading checkpoint shards: 100%|██████████| 3/3 [00:00<00:00,  5.86it/s]Loading checkpoint shards: 100%|██████████| 3/3 [00:00<00:00,  5.67it/s]
+  Model loaded in 12.2s
+Running 100-step rollout (switch at step 50)...
+  Inference done in 18.6s
+Figure saved: experiments/outputs/r2_exp03_dz_raw.png
+{
+  "model": "openvla/openvla-7b",
+  "dataset": "bridge_v2",
+  "episode_index": 0,
+  "original_instruction": "pick up the red block",
+  "instruction_a": "pick up the red block",
+  "instruction_b": "push the blue block to the left",
+  "total_steps": 100,
+  "switch_step": 50,
+  "fs_hz": 5.0,
+  "unnorm_key": "none",
+  "per_axis_overshoot_percent": {
+    "dx": 0.0,
+    "dy": 0.0,
+    "dz": 0.0,
+    "droll": 0.0,
+    "dpitch": 1.8625452057856252e-14,
+    "dyaw": -8.847089727481709e-14,
+    "grip": NaN
+  },
+  "analysis_axis": 2,
+  "overshoot_ratio": 0.0,
+  "overshoot_percent": 0.0,
+  "peak_velocity": 1.6078431372549018,
+  "peak_acceleration": 4.019607843137255,
+  "power_law_exponent": 0.4398237910721516,
+  "high_band_ratio": 0.08931563886292693,
+  "velocity_mean": 0.03215686274509803,
+  "velocity_p95": 0.0
+}
+
+========== r2_exp04: raw, sushi vs drawer ==========
+Using a slow image processor as `use_fast` is unset and a slow processor was saved with this model. `use_fast=True` will be the default behavior in v4.48, even if the model was saved with a slow processor. This will result in minor differences in outputs. You'll still be able to use a slow processor with `use_fast=False`.
+Expected `transformers==4.40.1` and `tokenizers==0.19.1` but got `transformers==4.49.0` and `tokenizers==0.21.4`; there might be inference-time regressions due to dependency changes. If in doubt, pleaseuse the above versions.
+Loading Bridge V2 observation (episode=0)...
+WARNING: Using synthetic Bridge V2 observation (real data unavailable)
+  Image shape: (256, 256, 3)
+  Original instruction: pick up the red block
+  Instruction A: pick up the sushi
+  Instruction B: close the drawer
+Loading OpenVLA-7B...
+Loading checkpoint shards:   0%|          | 0/3 [00:00<?, ?it/s]Loading checkpoint shards:  33%|███▎      | 1/3 [00:00<00:00,  4.87it/s]Loading checkpoint shards:  67%|██████▋   | 2/3 [00:00<00:00,  5.40it/s]Loading checkpoint shards: 100%|██████████| 3/3 [00:00<00:00,  5.80it/s]Loading checkpoint shards: 100%|██████████| 3/3 [00:00<00:00,  5.62it/s]
+  Model loaded in 12.3s
+Running 100-step rollout (switch at step 50)...
+  Inference done in 18.9s
+Figure saved: experiments/outputs/r2_exp04_raw_sushi_drawer.png
+{
+  "model": "openvla/openvla-7b",
+  "dataset": "bridge_v2",
+  "episode_index": 0,
+  "original_instruction": "pick up the red block",
+  "instruction_a": "pick up the sushi",
+  "instruction_b": "close the drawer",
+  "total_steps": 100,
+  "switch_step": 50,
+  "fs_hz": 5.0,
+  "unnorm_key": "none",
+  "per_axis_overshoot_percent": {
+    "dx": 0.0,
+    "dy": 0.0,
+    "dz": 0.0,
+    "droll": -1.2416968038570831e-14,
+    "dpitch": 0.0,
+    "dyaw": -1.45931376948152e-14,
+    "grip": -2.2291879628300383e-14
+  },
+  "analysis_axis": 0,
+  "overshoot_ratio": 0.0,
+  "overshoot_percent": 0.0,
+  "peak_velocity": 0.9803921568627452,
+  "peak_acceleration": 2.450980392156863,
+  "power_law_exponent": 0.304860631445613,
+  "high_band_ratio": 0.08931563886292693,
+  "velocity_mean": 0.0196078431372549,
+  "velocity_p95": 0.0
+}
+
+========== r2_exp05: raw, long, early switch ==========
+Using a slow image processor as `use_fast` is unset and a slow processor was saved with this model. `use_fast=True` will be the default behavior in v4.48, even if the model was saved with a slow processor. This will result in minor differences in outputs. You'll still be able to use a slow processor with `use_fast=False`.
+Expected `transformers==4.40.1` and `tokenizers==0.19.1` but got `transformers==4.49.0` and `tokenizers==0.21.4`; there might be inference-time regressions due to dependency changes. If in doubt, pleaseuse the above versions.
+Loading Bridge V2 observation (episode=0)...
+WARNING: Using synthetic Bridge V2 observation (real data unavailable)
+  Image shape: (256, 256, 3)
+  Original instruction: pick up the red block
+  Instruction A: pick up the red block
+  Instruction B: push the blue block to the left
+Loading OpenVLA-7B...
+Loading checkpoint shards:   0%|          | 0/3 [00:00<?, ?it/s]Loading checkpoint shards:  33%|███▎      | 1/3 [00:00<00:00,  4.90it/s]Loading checkpoint shards:  67%|██████▋   | 2/3 [00:00<00:00,  5.44it/s]Loading checkpoint shards: 100%|██████████| 3/3 [00:00<00:00,  5.88it/s]Loading checkpoint shards: 100%|██████████| 3/3 [00:00<00:00,  5.69it/s]
+  Model loaded in 12.3s
+Running 200-step rollout (switch at step 50)...
+  Inference done in 37.4s
+Figure saved: experiments/outputs/r2_exp05_raw_long_early.png
+{
+  "model": "openvla/openvla-7b",
+  "dataset": "bridge_v2",
+  "episode_index": 0,
+  "original_instruction": "pick up the red block",
+  "instruction_a": "pick up the red block",
+  "instruction_b": "push the blue block to the left",
+  "total_steps": 200,
+  "switch_step": 50,
+  "fs_hz": 5.0,
+  "unnorm_key": "none",
+  "per_axis_overshoot_percent": {
+    "dx": 1.1234399653945041e-14,
+    "dy": 0.0,
+    "dz": -3.452522820480669e-14,
+    "droll": 0.0,
+    "dpitch": 1.8625452057856252e-14,
+    "dyaw": -8.847089727481709e-14,
+    "grip": NaN
+  },
+  "analysis_axis": 0,
+  "overshoot_ratio": 1.123439965394504e-16,
+  "overshoot_percent": 1.1234399653945041e-14,
+  "peak_velocity": 1.2352941176470587,
+  "peak_acceleration": 3.0882352941176467,
+  "power_law_exponent": -0.8942341425246443,
+  "high_band_ratio": 0.05331880525888031,
+  "velocity_mean": 0.012352941176470587,
+  "velocity_p95": 0.0
+}
+
+========== r2_exp06: raw, corn vs cloth ==========
+Using a slow image processor as `use_fast` is unset and a slow processor was saved with this model. `use_fast=True` will be the default behavior in v4.48, even if the model was saved with a slow processor. This will result in minor differences in outputs. You'll still be able to use a slow processor with `use_fast=False`.
+Expected `transformers==4.40.1` and `tokenizers==0.19.1` but got `transformers==4.49.0` and `tokenizers==0.21.4`; there might be inference-time regressions due to dependency changes. If in doubt, pleaseuse the above versions.
+Loading Bridge V2 observation (episode=0)...
+WARNING: Using synthetic Bridge V2 observation (real data unavailable)
+  Image shape: (256, 256, 3)
+  Original instruction: pick up the red block
+  Instruction A: put the corn in the pot
+  Instruction B: move the cloth to the right
+Loading OpenVLA-7B...
+Loading checkpoint shards:   0%|          | 0/3 [00:00<?, ?it/s]Loading checkpoint shards:  33%|███▎      | 1/3 [00:00<00:00,  4.86it/s]Loading checkpoint shards:  67%|██████▋   | 2/3 [00:00<00:00,  5.42it/s]Loading checkpoint shards: 100%|██████████| 3/3 [00:00<00:00,  5.83it/s]Loading checkpoint shards: 100%|██████████| 3/3 [00:00<00:00,  5.64it/s]
+  Model loaded in 12.2s
+Running 100-step rollout (switch at step 50)...
+  Inference done in 18.4s
+Figure saved: experiments/outputs/r2_exp06_raw_corn_cloth.png
+{
+  "model": "openvla/openvla-7b",
+  "dataset": "bridge_v2",
+  "episode_index": 0,
+  "original_instruction": "pick up the red block",
+  "instruction_a": "put the corn in the pot",
+  "instruction_b": "move the cloth to the right",
+  "total_steps": 100,
+  "switch_step": 50,
+  "fs_hz": 5.0,
+  "unnorm_key": "none",
+  "per_axis_overshoot_percent": {
+    "dx": -1.5728159515523047e-14,
+    "dy": 0.0,
+    "dz": 0.0,
+    "droll": 0.0,
+    "dpitch": 0.0,
+    "dyaw": 0.0,
+    "grip": -2.2291879628300383e-14
+  },
+  "analysis_axis": 0,
+  "overshoot_ratio": -1.5728159515523047e-16,
+  "overshoot_percent": -1.5728159515523047e-14,
+  "peak_velocity": 3.5294117647058822,
+  "peak_acceleration": 8.823529411764707,
+  "power_law_exponent": 0.39157771681995984,
+  "high_band_ratio": 0.08931563886292695,
+  "velocity_mean": 0.07058823529411765,
+  "velocity_p95": 0.0
+}
+
+========== r2_exp07: raw, episode 1 ==========
+Traceback (most recent call last):
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "/glade/u/home/wukoutian/Gibbs-VLA-Overshoot/experiments/openvla_swap_experiment.py", line 263, in <module>
+    main()
+  File "/glade/u/home/wukoutian/Gibbs-VLA-Overshoot/experiments/openvla_swap_experiment.py", line 96, in main
+    raise ValueError("instruction_a and instruction_b must differ")
+ValueError: instruction_a and instruction_b must differ
+Loading Bridge V2 observation (episode=1)...
+WARNING: Using synthetic Bridge V2 observation (real data unavailable)
+  Image shape: (256, 256, 3)
+  Original instruction: push the blue block to the left
+
+========== r2_exp08: raw, episode 2 ==========
+Using a slow image processor as `use_fast` is unset and a slow processor was saved with this model. `use_fast=True` will be the default behavior in v4.48, even if the model was saved with a slow processor. This will result in minor differences in outputs. You'll still be able to use a slow processor with `use_fast=False`.
+Expected `transformers==4.40.1` and `tokenizers==0.19.1` but got `transformers==4.49.0` and `tokenizers==0.21.4`; there might be inference-time regressions due to dependency changes. If in doubt, pleaseuse the above versions.
+Loading Bridge V2 observation (episode=2)...
+WARNING: Using synthetic Bridge V2 observation (real data unavailable)
+  Image shape: (256, 256, 3)
+  Original instruction: put the corn in the pot
+  Instruction A: put the corn in the pot
+  Instruction B: push the blue block to the left
+Loading OpenVLA-7B...
+Loading checkpoint shards:   0%|          | 0/3 [00:00<?, ?it/s]Loading checkpoint shards:  33%|███▎      | 1/3 [00:00<00:00,  4.90it/s]Loading checkpoint shards:  67%|██████▋   | 2/3 [00:00<00:00,  5.48it/s]Loading checkpoint shards: 100%|██████████| 3/3 [00:00<00:00,  5.93it/s]Loading checkpoint shards: 100%|██████████| 3/3 [00:00<00:00,  5.72it/s]
+  Model loaded in 12.1s
+Running 100-step rollout (switch at step 50)...
+  Inference done in 18.4s
+Figure saved: experiments/outputs/r2_exp08_raw_ep2.png
+{
+  "model": "openvla/openvla-7b",
+  "dataset": "bridge_v2",
+  "episode_index": 2,
+  "original_instruction": "put the corn in the pot",
+  "instruction_a": "put the corn in the pot",
+  "instruction_b": "push the blue block to the left",
+  "total_steps": 100,
+  "switch_step": 50,
+  "fs_hz": 5.0,
+  "unnorm_key": "none",
+  "per_axis_overshoot_percent": {
+    "dx": 0.0,
+    "dy": 0.0,
+    "dz": 0.0,
+    "droll": 0.0,
+    "dpitch": -1.4155343563970744e-14,
+    "dyaw": 0.0,
+    "grip": NaN
+  },
+  "analysis_axis": 0,
+  "overshoot_ratio": 0.0,
+  "overshoot_percent": 0.0,
+  "peak_velocity": 0.03921568627450994,
+  "peak_acceleration": 0.09803921568627486,
+  "power_law_exponent": 0.48371349288879734,
+  "high_band_ratio": 0.0893156388629272,
+  "velocity_mean": 0.0007843137254901989,
+  "velocity_p95": 0.0
+}
+
+========== r2_exp09: fractal dataset unnorm ==========
+Using a slow image processor as `use_fast` is unset and a slow processor was saved with this model. `use_fast=True` will be the default behavior in v4.48, even if the model was saved with a slow processor. This will result in minor differences in outputs. You'll still be able to use a slow processor with `use_fast=False`.
+Expected `transformers==4.40.1` and `tokenizers==0.19.1` but got `transformers==4.49.0` and `tokenizers==0.21.4`; there might be inference-time regressions due to dependency changes. If in doubt, pleaseuse the above versions.
+Loading Bridge V2 observation (episode=0)...
+WARNING: Using synthetic Bridge V2 observation (real data unavailable)
+  Image shape: (256, 256, 3)
+  Original instruction: pick up the red block
+  Instruction A: pick up the sushi
+  Instruction B: close the drawer
+Loading OpenVLA-7B...
+Loading checkpoint shards:   0%|          | 0/3 [00:00<?, ?it/s]Loading checkpoint shards:  33%|███▎      | 1/3 [00:00<00:00,  4.85it/s]Loading checkpoint shards:  67%|██████▋   | 2/3 [00:00<00:00,  5.44it/s]Loading checkpoint shards: 100%|██████████| 3/3 [00:00<00:00,  5.86it/s]Loading checkpoint shards: 100%|██████████| 3/3 [00:00<00:00,  5.66it/s]
+  Model loaded in 12.2s
+Running 100-step rollout (switch at step 50)...
+  Inference done in 23.3s
+Figure saved: experiments/outputs/r2_exp09_fractal.png
+{
+  "model": "openvla/openvla-7b",
+  "dataset": "bridge_v2",
+  "episode_index": 0,
+  "original_instruction": "pick up the red block",
+  "instruction_a": "pick up the sushi",
+  "instruction_b": "close the drawer",
+  "total_steps": 100,
+  "switch_step": 50,
+  "fs_hz": 5.0,
+  "unnorm_key": "fractal20220817_data",
+  "per_axis_overshoot_percent": {
+    "dx": 1.2641697864306866e-14,
+    "dy": 3.716216191812449e-14,
+    "dz": 0.0,
+    "droll": 0.0,
+    "dpitch": 0.0,
+    "dyaw": 0.0,
+    "grip": -2.2291879628300383e-14
+  },
+  "analysis_axis": 0,
+  "overshoot_ratio": 1.2641697864306866e-16,
+  "overshoot_percent": 1.2641697864306866e-14,
+  "peak_velocity": 0.5488893959013854,
+  "peak_acceleration": 1.3722234897534635,
+  "power_law_exponent": 0.3074468946968978,
+  "high_band_ratio": 0.08931563886292693,
+  "velocity_mean": 0.010977787918027709,
+  "velocity_p95": 0.0
+}
+
+========== r2_exp10: raw, gripper ==========
+Using a slow image processor as `use_fast` is unset and a slow processor was saved with this model. `use_fast=True` will be the default behavior in v4.48, even if the model was saved with a slow processor. This will result in minor differences in outputs. You'll still be able to use a slow processor with `use_fast=False`.
+Expected `transformers==4.40.1` and `tokenizers==0.19.1` but got `transformers==4.49.0` and `tokenizers==0.21.4`; there might be inference-time regressions due to dependency changes. If in doubt, pleaseuse the above versions.
+Loading Bridge V2 observation (episode=0)...
+WARNING: Using synthetic Bridge V2 observation (real data unavailable)
+  Image shape: (256, 256, 3)
+  Original instruction: pick up the red block
+  Instruction A: pick up the red block
+  Instruction B: push the blue block to the left
+Loading OpenVLA-7B...
+Loading checkpoint shards:   0%|          | 0/3 [00:00<?, ?it/s]Loading checkpoint shards:  33%|███▎      | 1/3 [00:00<00:00,  4.76it/s]Loading checkpoint shards:  67%|██████▋   | 2/3 [00:00<00:00,  5.44it/s]Loading checkpoint shards: 100%|██████████| 3/3 [00:00<00:00,  5.89it/s]Loading checkpoint shards: 100%|██████████| 3/3 [00:00<00:00,  5.67it/s]
+/glade/u/home/wukoutian/Gibbs-VLA-Overshoot/experiments/openvla_swap_experiment.py:226: UserWarning: Data has no positive values, and therefore cannot be log-scaled.
+  fig.tight_layout(rect=(0, 0, 1, 0.93))
+  Model loaded in 12.2s
+Running 100-step rollout (switch at step 50)...
+  Inference done in 18.7s
+Figure saved: experiments/outputs/r2_exp10_raw_grip.png
+{
+  "model": "openvla/openvla-7b",
+  "dataset": "bridge_v2",
+  "episode_index": 0,
+  "original_instruction": "pick up the red block",
+  "instruction_a": "pick up the red block",
+  "instruction_b": "push the blue block to the left",
+  "total_steps": 100,
+  "switch_step": 50,
+  "fs_hz": 5.0,
+  "unnorm_key": "none",
+  "per_axis_overshoot_percent": {
+    "dx": 0.0,
+    "dy": 0.0,
+    "dz": 0.0,
+    "droll": 0.0,
+    "dpitch": 1.8625452057856252e-14,
+    "dyaw": -8.847089727481709e-14,
+    "grip": NaN
+  },
+  "analysis_axis": 6,
+  "overshoot_ratio": NaN,
+  "overshoot_percent": NaN,
+  "peak_velocity": 0.0,
+  "peak_acceleration": 0.0,
+  "power_law_exponent": NaN,
+  "high_band_ratio": 0.0,
+  "velocity_mean": 0.0,
+  "velocity_p95": 0.0
+}
+
+========== ALL ROUND 2 EXPERIMENTS DONE ==========
+
+========== FULL SUMMARY ==========
+exp01_dz_bridge_150: overshoot=0.0000%, max_axis=0.0000% (droll), plaw=-0.8575
+exp05_dx_early_switch: overshoot=0.0000%, max_axis=0.0000% (dx), plaw=-1.1747
+exp06_dx_sushi_drawer: overshoot=-0.0000%, max_axis=0.0000% (dy), plaw=0.3790
+exp07_dz_sushi_drawer: overshoot=0.0000%, max_axis=0.0000% (dy), plaw=-0.0010
+exp09_grip_pick_close: overshoot=nan%, max_axis=0.0000% (dy), plaw=nan
+instruction_swap: overshoot=6.2575%, max_axis=N/A, plaw=-0.0750
+openvla_swap: overshoot=0.0000%, max_axis=0.0000% (dy), plaw=0.3473
+r2_exp01_dx_raw: overshoot=0.0000%, max_axis=0.0000% (dpitch), plaw=0.3665
+r2_exp02_dy_raw: overshoot=0.0000%, max_axis=0.0000% (dpitch), plaw=0.3819
+r2_exp03_dz_raw: overshoot=0.0000%, max_axis=0.0000% (dpitch), plaw=0.4398
+r2_exp04_raw_sushi_drawer: overshoot=0.0000%, max_axis=0.0000% (dx), plaw=0.3049
+r2_exp05_raw_long_early: overshoot=0.0000%, max_axis=0.0000% (dpitch), plaw=-0.8942
+r2_exp06_raw_corn_cloth: overshoot=-0.0000%, max_axis=0.0000% (dy), plaw=0.3916
+r2_exp08_raw_ep2: overshoot=0.0000%, max_axis=0.0000% (dx), plaw=0.4837
+r2_exp09_fractal: overshoot=0.0000%, max_axis=0.0000% (dy), plaw=0.3074
+r2_exp10_raw_grip: overshoot=nan%, max_axis=0.0000% (dpitch), plaw=nan
+synthetic_gibbs_analysis: overshoot=9.0507%, max_axis=N/A, plaw=-0.8330

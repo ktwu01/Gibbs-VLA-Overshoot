@@ -1,0 +1,110 @@
+=== GPU Info ===
+Wed Apr 15 10:58:49 2026       
++-----------------------------------------------------------------------------------------+
+| NVIDIA-SMI 565.57.01              Driver Version: 565.57.01      CUDA Version: 12.7     |
+|-----------------------------------------+------------------------+----------------------+
+| GPU  Name                 Persistence-M | Bus-Id          Disp.A | Volatile Uncorr. ECC |
+| Fan  Temp   Perf          Pwr:Usage/Cap |           Memory-Usage | GPU-Util  Compute M. |
+|                                         |                        |               MIG M. |
+|=========================================+========================+======================|
+|   0  NVIDIA A100-SXM4-80GB          On  |   00000000:01:00.0 Off |                    0 |
+| N/A   34C    P0             61W /  500W |       5MiB /  81920MiB |      0%      Default |
+|                                         |                        |             Disabled |
++-----------------------------------------+------------------------+----------------------+
+                                                                                         
++-----------------------------------------------------------------------------------------+
+| Processes:                                                                              |
+|  GPU   GI   CI        PID   Type   Process name                              GPU Memory |
+|        ID   ID                                                               Usage      |
+|=========================================================================================|
+|  No running processes found                                                             |
++-----------------------------------------------------------------------------------------+
+=== PyTorch GPU Check ===
+CUDA: True NVIDIA A100-SXM4-80GB
+=== Running OpenVLA Swap Experiment ===
+A new version of the following files was downloaded from https://huggingface.co/openvla/openvla-7b:
+- processing_prismatic.py
+. Make sure to double-check they do not contain any added malicious code. To avoid downloading new versions of the code file, you can pin a revision.
+Using a slow image processor as `use_fast` is unset and a slow processor was saved with this model. `use_fast=True` will be the default behavior in v4.48, even if the model was saved with a slow processor. This will result in minor differences in outputs. You'll still be able to use a slow processor with `use_fast=False`.
+A new version of the following files was downloaded from https://huggingface.co/openvla/openvla-7b:
+- configuration_prismatic.py
+. Make sure to double-check they do not contain any added malicious code. To avoid downloading new versions of the code file, you can pin a revision.
+A new version of the following files was downloaded from https://huggingface.co/openvla/openvla-7b:
+- modeling_prismatic.py
+. Make sure to double-check they do not contain any added malicious code. To avoid downloading new versions of the code file, you can pin a revision.
+Loading Bridge V2 observation (episode=0)...
+WARNING: Using synthetic Bridge V2 observation (real data unavailable)
+  Image shape: (256, 256, 3)
+  Original instruction: pick up the red block
+  Instruction A: pick up the red block
+  Instruction B: push the blue block to the left
+Loading OpenVLA-7B...
+Downloading shards:   0%|          | 0/3 [00:00<?, ?it/s]Downloading shards:  33%|███▎      | 1/3 [00:06<00:13,  6.94s/it]Downloading shards:  67%|██████▋   | 2/3 [00:14<00:07,  7.54s/it]Downloading shards: 100%|██████████| 3/3 [00:19<00:00,  6.27s/it]Downloading shards: 100%|██████████| 3/3 [00:19<00:00,  6.55s/it]
+Expected `transformers==4.40.1` and `tokenizers==0.19.1` but got `transformers==4.49.0` and `tokenizers==0.21.4`; there might be inference-time regressions due to dependency changes. If in doubt, pleaseuse the above versions.
+Loading checkpoint shards:   0%|          | 0/3 [00:00<?, ?it/s]Loading checkpoint shards:  33%|███▎      | 1/3 [00:01<00:03,  1.88s/it]Loading checkpoint shards:  67%|██████▋   | 2/3 [00:02<00:01,  1.03s/it]Loading checkpoint shards: 100%|██████████| 3/3 [00:02<00:00,  1.65it/s]Loading checkpoint shards: 100%|██████████| 3/3 [00:02<00:00,  1.24it/s]
+  Model loaded in 111.6s
+Running 100-step rollout (switch at step 50)...
+  Inference done in 26.3s
+Figure saved: experiments/outputs/openvla_swap.png
+{
+  "model": "openvla/openvla-7b",
+  "dataset": "bridge_v2",
+  "episode_index": 0,
+  "original_instruction": "pick up the red block",
+  "instruction_a": "pick up the red block",
+  "instruction_b": "push the blue block to the left",
+  "total_steps": 100,
+  "switch_step": 50,
+  "fs_hz": 5.0,
+  "unnorm_key": "bridge_orig",
+  "per_axis_overshoot_percent": {
+    "dx": 0.0,
+    "dy": 1.2910980002886001e-14,
+    "dz": 0.0,
+    "droll": 0.0,
+    "dpitch": 0.0,
+    "dyaw": 0.0,
+    "grip": 0.0
+  },
+  "analysis_axis": 0,
+  "overshoot_ratio": 0.0,
+  "overshoot_percent": 0.0,
+  "peak_velocity": 0.005591856030856858,
+  "peak_acceleration": 0.013979640077142145,
+  "power_law_exponent": 0.3473062348827359,
+  "high_band_ratio": 0.08931563886292691,
+  "velocity_mean": 0.00011183712061713716,
+  "velocity_p95": 0.0
+}
+=== Results ===
+{
+    "model": "openvla/openvla-7b",
+    "dataset": "bridge_v2",
+    "episode_index": 0,
+    "original_instruction": "pick up the red block",
+    "instruction_a": "pick up the red block",
+    "instruction_b": "push the blue block to the left",
+    "total_steps": 100,
+    "switch_step": 50,
+    "fs_hz": 5.0,
+    "unnorm_key": "bridge_orig",
+    "per_axis_overshoot_percent": {
+        "dx": 0.0,
+        "dy": 1.2910980002886001e-14,
+        "dz": 0.0,
+        "droll": 0.0,
+        "dpitch": 0.0,
+        "dyaw": 0.0,
+        "grip": 0.0
+    },
+    "analysis_axis": 0,
+    "overshoot_ratio": 0.0,
+    "overshoot_percent": 0.0,
+    "peak_velocity": 0.005591856030856858,
+    "peak_acceleration": 0.013979640077142145,
+    "power_law_exponent": 0.3473062348827359,
+    "high_band_ratio": 0.08931563886292691,
+    "velocity_mean": 0.00011183712061713716,
+    "velocity_p95": 0.0
+}
+Done.
